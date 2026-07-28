@@ -33,9 +33,9 @@ export function Dashboard() {
       {/* ===== Main ===== */}
       <Main>
         <div className='mb-2 flex items-center justify-between space-y-2'>
-          <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>대시보드</h1>
           <div className='flex items-center space-x-2'>
-            <Button>Download</Button>
+            <Button>다운로드</Button>
           </div>
         </div>
         <Tabs
@@ -45,13 +45,13 @@ export function Dashboard() {
         >
           <div className='w-full overflow-x-auto pb-2'>
             <TabsList>
-              <TabsTrigger value='overview'>Overview</TabsTrigger>
-              <TabsTrigger value='analytics'>Analytics</TabsTrigger>
+              <TabsTrigger value='overview'>개요</TabsTrigger>
+              <TabsTrigger value='analytics'>분석</TabsTrigger>
               <TabsTrigger value='reports' disabled>
-                Reports
+                보고서
               </TabsTrigger>
               <TabsTrigger value='notifications' disabled>
-                Notifications
+                알림
               </TabsTrigger>
             </TabsList>
           </div>
@@ -60,7 +60,7 @@ export function Dashboard() {
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                   <CardTitle className='text-sm font-medium'>
-                    Total Revenue
+                    총 매출
                   </CardTitle>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -78,14 +78,14 @@ export function Dashboard() {
                 <CardContent>
                   <div className='text-2xl font-bold'>$45,231.89</div>
                   <p className='text-xs text-muted-foreground'>
-                    +20.1% from last month
+                    지난달 대비 +20.1%
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                   <CardTitle className='text-sm font-medium'>
-                    Subscriptions
+                    구독 수
                   </CardTitle>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -105,13 +105,13 @@ export function Dashboard() {
                 <CardContent>
                   <div className='text-2xl font-bold'>+2350</div>
                   <p className='text-xs text-muted-foreground'>
-                    +180.1% from last month
+                    지난달 대비 +180.1%
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Sales</CardTitle>
+                  <CardTitle className='text-sm font-medium'>판매 건수</CardTitle>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     viewBox='0 0 24 24'
@@ -129,14 +129,14 @@ export function Dashboard() {
                 <CardContent>
                   <div className='text-2xl font-bold'>+12,234</div>
                   <p className='text-xs text-muted-foreground'>
-                    +19% from last month
+                    지난달 대비 +19%
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
                   <CardTitle className='text-sm font-medium'>
-                    Active Now
+                    현재 활성 사용자
                   </CardTitle>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -154,7 +154,7 @@ export function Dashboard() {
                 <CardContent>
                   <div className='text-2xl font-bold'>+573</div>
                   <p className='text-xs text-muted-foreground'>
-                    +201 since last hour
+                    지난 1시간 대비 +201
                   </p>
                 </CardContent>
               </Card>
@@ -162,7 +162,7 @@ export function Dashboard() {
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
               <Card className='col-span-1 lg:col-span-4'>
                 <CardHeader>
-                  <CardTitle>Overview</CardTitle>
+                  <CardTitle>개요</CardTitle>
                 </CardHeader>
                 <CardContent className='ps-2'>
                   <Overview />
@@ -170,9 +170,9 @@ export function Dashboard() {
               </Card>
               <Card className='col-span-1 lg:col-span-3'>
                 <CardHeader>
-                  <CardTitle>Recent Sales</CardTitle>
+                  <CardTitle>최근 판매</CardTitle>
                   <CardDescription>
-                    You made 265 sales this month.
+                    이번 달에 265건의 판매가 발생했습니다.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -192,25 +192,25 @@ export function Dashboard() {
 
 const topNav = [
   {
-    title: 'Overview',
+    title: '개요',
     href: 'dashboard/overview',
     isActive: true,
     disabled: false,
   },
   {
-    title: 'Customers',
+    title: '고객',
     href: 'dashboard/customers',
     isActive: false,
     disabled: true,
   },
   {
-    title: 'Products',
+    title: '상품',
     href: 'dashboard/products',
     isActive: false,
     disabled: true,
   },
   {
-    title: 'Settings',
+    title: '설정',
     href: 'dashboard/settings',
     isActive: false,
     disabled: true,

@@ -13,41 +13,41 @@ import {
 export const labels = [
   {
     value: 'bug',
-    label: 'Bug',
+    label: '버그',
   },
   {
     value: 'feature',
-    label: 'Feature',
+    label: '기능',
   },
   {
     value: 'documentation',
-    label: 'Documentation',
+    label: '문서',
   },
 ]
 
 export const statuses = [
   {
-    label: 'Backlog',
+    label: '백로그',
     value: 'backlog' as const,
     icon: HelpCircle,
   },
   {
-    label: 'Todo',
+    label: '할 일',
     value: 'todo' as const,
     icon: Circle,
   },
   {
-    label: 'In Progress',
+    label: '진행 중',
     value: 'in progress' as const,
     icon: Timer,
   },
   {
-    label: 'Done',
+    label: '완료',
     value: 'done' as const,
     icon: CheckCircle,
   },
   {
-    label: 'Canceled',
+    label: '취소됨',
     value: 'canceled' as const,
     icon: CircleOff,
   },
@@ -55,22 +55,22 @@ export const statuses = [
 
 export const priorities = [
   {
-    label: 'Low',
+    label: '낮음',
     value: 'low' as const,
     icon: ArrowDown,
   },
   {
-    label: 'Medium',
+    label: '보통',
     value: 'medium' as const,
     icon: ArrowRight,
   },
   {
-    label: 'High',
+    label: '높음',
     value: 'high' as const,
     icon: ArrowUp,
   },
   {
-    label: 'Critical',
+    label: '긴급',
     value: 'critical' as const,
     icon: AlertCircle,
   },

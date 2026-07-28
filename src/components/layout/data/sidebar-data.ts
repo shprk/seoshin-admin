@@ -1,23 +1,14 @@
 import {
-  Construction,
   LayoutDashboard,
   Monitor,
-  Bug,
   ListTodo,
-  FileX,
   HelpCircle,
-  Lock,
   Bell,
-  Package,
   Palette,
-  ServerOff,
   Settings,
   Wrench,
   UserCog,
-  UserX,
   Users,
-  MessagesSquare,
-  ShieldCheck,
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
@@ -33,9 +24,9 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: '서신',
       logo: Command,
-      plan: 'Vite + ShadcnUI',
+      plan: 'seoshin',
     },
     {
       name: 'Acme Inc',
@@ -50,48 +41,49 @@ export const sidebarData: SidebarData = {
   ],
   navGroups: [
     {
-      title: 'General',
+      title: '일반',
       items: [
         {
-          title: 'Dashboard',
+          title: '대시보드',
           url: '/',
           icon: LayoutDashboard,
         },
         {
-          title: 'Tasks',
+          title: '작업',
           url: '/tasks',
           icon: ListTodo,
         },
+        // 복원 시 icon import 추가: Package, MessagesSquare
+        // {
+        //   title: '앱',
+        //   url: '/apps',
+        //   icon: Package,
+        // },
+        // {
+        //   title: '채팅',
+        //   url: '/chats',
+        //   badge: '3',
+        //   icon: MessagesSquare,
+        // },
         {
-          title: 'Apps',
-          url: '/apps',
-          icon: Package,
-        },
-        {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
-        },
-        {
-          title: 'Users',
+          title: '사용자',
           url: '/users',
           icon: Users,
         },
         {
-          title: 'Secured by Clerk',
+          title: 'Clerk 보안 기능',
           icon: ClerkLogo,
           items: [
             {
-              title: 'Sign In',
+              title: '로그인',
               url: '/clerk/sign-in',
             },
             {
-              title: 'Sign Up',
+              title: '회원가입',
               url: '/clerk/sign-up',
             },
             {
-              title: 'User Management',
+              title: '사용자 관리',
               url: '/clerk/user-management',
             },
           ],
@@ -99,103 +91,105 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Pages',
+      title: '페이지',
       items: [
-        {
-          title: 'Auth',
-          icon: ShieldCheck,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/sign-in',
-            },
-            {
-              title: 'Sign In (2 Col)',
-              url: '/sign-in-2',
-            },
-            {
-              title: 'Sign Up',
-              url: '/sign-up',
-            },
-            {
-              title: 'Forgot Password',
-              url: '/forgot-password',
-            },
-            {
-              title: 'OTP',
-              url: '/otp',
-            },
-          ],
-        },
-        {
-          title: 'Errors',
-          icon: Bug,
-          items: [
-            {
-              title: 'Unauthorized',
-              url: '/errors/unauthorized',
-              icon: Lock,
-            },
-            {
-              title: 'Forbidden',
-              url: '/errors/forbidden',
-              icon: UserX,
-            },
-            {
-              title: 'Not Found',
-              url: '/errors/not-found',
-              icon: FileX,
-            },
-            {
-              title: 'Internal Server Error',
-              url: '/errors/internal-server-error',
-              icon: ServerOff,
-            },
-            {
-              title: 'Maintenance Error',
-              url: '/errors/maintenance-error',
-              icon: Construction,
-            },
-          ],
-        },
+        // 복원 시 icon import 추가:
+        // ShieldCheck, Bug, Lock, UserX, FileX, ServerOff, Construction
+        // {
+        //   title: '인증',
+        //   icon: ShieldCheck,
+        //   items: [
+        //     {
+        //       title: '로그인',
+        //       url: '/sign-in',
+        //     },
+        //     {
+        //       title: '로그인 (2단)',
+        //       url: '/sign-in-2',
+        //     },
+        //     {
+        //       title: '회원가입',
+        //       url: '/sign-up',
+        //     },
+        //     {
+        //       title: '비밀번호 찾기',
+        //       url: '/forgot-password',
+        //     },
+        //     {
+        //       title: 'OTP',
+        //       url: '/otp',
+        //     },
+        //   ],
+        // },
+        // {
+        //   title: '에러',
+        //   icon: Bug,
+        //   items: [
+        //     {
+        //       title: '인증 필요',
+        //       url: '/errors/unauthorized',
+        //       icon: Lock,
+        //     },
+        //     {
+        //       title: '접근 금지',
+        //       url: '/errors/forbidden',
+        //       icon: UserX,
+        //     },
+        //     {
+        //       title: '페이지 없음',
+        //       url: '/errors/not-found',
+        //       icon: FileX,
+        //     },
+        //     {
+        //       title: '서버 오류',
+        //       url: '/errors/internal-server-error',
+        //       icon: ServerOff,
+        //     },
+        //     {
+        //       title: '점검 중',
+        //       url: '/errors/maintenance-error',
+        //       icon: Construction,
+        //     },
+        //   ],
+        // },
       ],
     },
     {
-      title: 'Other',
+      title: '기타',
       items: [
         {
-          title: 'Settings',
+          title: '설정',
           icon: Settings,
           items: [
             {
-              title: 'Profile',
+              title: '프로필',
               url: '/settings',
               icon: UserCog,
             },
             {
-              title: 'Account',
+              title: '계정',
               url: '/settings/account',
               icon: Wrench,
             },
             {
-              title: 'Appearance',
+              title: '화면',
               url: '/settings/appearance',
               icon: Palette,
             },
             {
-              title: 'Notifications',
+              title: '알림',
               url: '/settings/notifications',
               icon: Bell,
             },
             {
-              title: 'Display',
+              title: '디스플레이',
               url: '/settings/display',
               icon: Monitor,
             },
           ],
         },
         {
-          title: 'Help Center',
+          title: '도움말 센터',
           url: '/help-center',
           icon: HelpCircle,
         },

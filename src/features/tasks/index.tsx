@@ -23,9 +23,9 @@ export function Tasks() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Tasks</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>작업</h2>
             <p className='text-muted-foreground'>
-              Here&apos;s a list of your tasks for this month!
+              이번 달 작업 목록을 확인하고 관리할 수 있습니다.
             </p>
           </div>
           <TasksPrimaryButtons />

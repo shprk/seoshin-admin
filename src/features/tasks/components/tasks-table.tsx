@@ -113,16 +113,16 @@ export function TasksTable({ data }: DataTableProps) {
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter by title or ID...'
+        searchPlaceholder='제목 또는 ID로 필터링...'
         filters={[
           {
             columnId: 'status',
-            title: 'Status',
+            title: '상태',
             options: statuses,
           },
           {
             columnId: 'priority',
-            title: 'Priority',
+            title: '우선순위',
             options: priorities,
           },
         ]}
@@ -183,7 +183,7 @@ export function TasksTable({ data }: DataTableProps) {
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  No results.
+                  결과가 없습니다.
                 </TableCell>
               </TableRow>
             )}
