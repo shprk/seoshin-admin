@@ -1,9 +1,10 @@
-import { Link, useSearch } from '@tanstack/react-router'
+// import { Link } from '@tanstack/react-router'
+import { useSearch } from '@tanstack/react-router'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
+  // CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -17,41 +18,31 @@ export function SignIn() {
     <AuthLayout>
       <Card className='max-w-sm gap-4'>
         <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>Sign in</CardTitle>
+          <CardTitle className='text-lg tracking-tight'>관리자 로그인</CardTitle>
           <CardDescription>
-            Enter your email and password below to log into{' '}
-            <br className='max-sm:hidden' /> your account. Don't have an
-            account?{' '}
+            관리자 계정 이메일과 비밀번호를 입력해주세요.
+            {/* 복원 시 주석 해제
+            {' '}
+            계정이 없으신가요?{' '}
             <Link
               to='/sign-up'
               className='text-nowrap underline underline-offset-4 hover:text-primary'
             >
-              Sign Up
+              회원가입
             </Link>
+            */}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <UserAuthForm redirectTo={redirect} />
         </CardContent>
+        {/* 복원 시 주석 해제
         <CardFooter>
           <p className='px-8 text-center text-sm text-muted-foreground'>
-            By clicking sign in, you agree to our{' '}
-            <a
-              href='/terms'
-              className='underline underline-offset-4 hover:text-primary'
-            >
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a
-              href='/privacy'
-              className='underline underline-offset-4 hover:text-primary'
-            >
-              Privacy Policy
-            </a>
-            .
+            로그인하면 서비스 이용약관 및 개인정보처리방침에 동의하게 됩니다.
           </p>
         </CardFooter>
+        */}
       </Card>
     </AuthLayout>
   )

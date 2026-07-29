@@ -8,12 +8,11 @@ import {
   Settings,
   Wrench,
   UserCog,
-  Users,
+  ContactRound,
   AudioWaveform,
-  Command,
   GalleryVerticalEnd,
 } from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
+import { SeoshinLogo } from '@/assets/seoshin-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -25,7 +24,7 @@ export const sidebarData: SidebarData = {
   teams: [
     {
       name: '서신',
-      logo: Command,
+      logo: SeoshinLogo,
       plan: 'seoshin',
     },
     {
@@ -66,28 +65,35 @@ export const sidebarData: SidebarData = {
         //   icon: MessagesSquare,
         // },
         {
-          title: '사용자',
-          url: '/users',
-          icon: Users,
+          title: '고객',
+          url: '/customers',
+          icon: ContactRound,
         },
-        {
-          title: 'Clerk 보안 기능',
-          icon: ClerkLogo,
-          items: [
-            {
-              title: '로그인',
-              url: '/clerk/sign-in',
-            },
-            {
-              title: '회원가입',
-              url: '/clerk/sign-up',
-            },
-            {
-              title: '사용자 관리',
-              url: '/clerk/user-management',
-            },
-          ],
-        },
+        // 복원 시 icon import 추가: Users
+        // {
+        //   title: '사용자',
+        //   url: '/users',
+        //   icon: Users,
+        // },
+        // 복원 시 다시 추가: import { ClerkLogo } from '@/assets/clerk-logo'
+        // {
+        //   title: 'Clerk 보안 기능',
+        //   icon: ClerkLogo,
+        //   items: [
+        //     {
+        //       title: '로그인',
+        //       url: '/clerk/sign-in',
+        //     },
+        //     {
+        //       title: '회원가입',
+        //       url: '/clerk/sign-up',
+        //     },
+        //     {
+        //       title: '사용자 관리',
+        //       url: '/clerk/user-management',
+        //     },
+        //   ],
+        // },
       ],
     },
     {
