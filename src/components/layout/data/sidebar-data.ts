@@ -11,6 +11,7 @@ import {
   ContactRound,
   AudioWaveform,
   GalleryVerticalEnd,
+  Scan,
 } from 'lucide-react'
 import { SeoshinLogo } from '@/assets/seoshin-logo'
 import { type SidebarData } from '../types'
@@ -193,6 +194,11 @@ export const sidebarData: SidebarData = {
               icon: Monitor,
             },
           ],
+        },
+        {
+          title: '바코드 스캔',
+          url: '/barcode-scan',
+          icon: Scan,
         },
         {
           title: '도움말 센터',
