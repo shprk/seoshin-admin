@@ -1,10 +1,10 @@
+import { Link } from '@tanstack/react-router'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { Link } from '@tanstack/react-router'
 
 type TeamSwitcherProps = {
   teams: {
@@ -25,14 +25,14 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
         <SidebarMenuButton
           asChild
           size='lg'
-          className='-ms-1 h-auto gap-2 ps-0 pe-1.5 py-1 cursor-pointer hover:bg-transparent active:bg-transparent hover:text-sidebar-foreground active:text-sidebar-foreground group-data-[collapsible=icon]:ms-0 group-data-[collapsible=icon]:p-0!'
+          className='-ms-1 h-auto cursor-pointer gap-2 py-1 ps-0 pe-1.5 group-data-[collapsible=icon]:ms-0 group-data-[collapsible=icon]:p-0! hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground'
         >
           <Link
             to='/'
             aria-label='대시보드로 이동'
             onClick={() => setOpenMobile(false)}
           >
-            <div className='flex shrink-0 aspect-square size-12 items-center justify-center overflow-hidden rounded-lg group-data-[collapsible=icon]:size-8'>
+            <div className='flex aspect-square size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg group-data-[collapsible=icon]:size-8'>
               <Logo className='size-12 group-data-[collapsible=icon]:size-8' />
             </div>
             <div className='grid min-w-0 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>

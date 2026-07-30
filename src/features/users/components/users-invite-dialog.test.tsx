@@ -71,7 +71,7 @@ describe('UsersInviteDialog', () => {
 
     const roleSelect = getByRole('combobox', { name: /Role/i })
     await userEvent.click(roleSelect)
-    await userEvent.click(getByRole('option', { name: /Superadmin/i }))
+    await userEvent.click(getByRole('option', { name: /최고 관리자/i }))
 
     await expect.element(emailErrorMessage).not.toBeInTheDocument()
     await expect.element(roleErrorMessage).not.toBeInTheDocument()
@@ -93,7 +93,7 @@ describe('UsersInviteDialog', () => {
     const { getByRole } = await render(<Harness />)
 
     const EMAIL_VALUE = 'test@example.com'
-    const ROLE_VALUE = 'Superadmin'
+    const ROLE_LABEL = '최고 관리자'
     const DESC_VALUE = 'This is a test description'
 
     const emailInput = getByRole('textbox', { name: /Email/i })
@@ -101,13 +101,13 @@ describe('UsersInviteDialog', () => {
 
     const roleSelect = getByRole('combobox', { name: /Role/i })
     await userEvent.click(roleSelect)
-    await userEvent.click(getByRole('option', { name: ROLE_VALUE }))
+    await userEvent.click(getByRole('option', { name: ROLE_LABEL }))
 
     const descInput = getByRole('textbox', { name: /Description/i })
     await userEvent.fill(descInput, DESC_VALUE)
 
     await expect.element(emailInput).toHaveValue(EMAIL_VALUE)
-    await expect.element(roleSelect).toHaveTextContent(ROLE_VALUE)
+    await expect.element(roleSelect).toHaveTextContent(ROLE_LABEL)
     await expect.element(descInput).toHaveValue(DESC_VALUE)
 
     const cancelButton = getByRole('button', { name: /Cancel/i })
@@ -129,6 +129,7 @@ describe('UsersInviteDialog', () => {
 
     const EMAIL_VALUE = 'test@example.com'
     const ROLE_VALUE = 'superadmin'
+    const ROLE_LABEL = '최고 관리자'
     const DESC_VALUE = 'Welcome aboard!'
 
     const emailInput = getByRole('textbox', { name: /Email/i })
@@ -136,7 +137,7 @@ describe('UsersInviteDialog', () => {
 
     const roleSelect = getByRole('combobox', { name: /Role/i })
     await userEvent.click(roleSelect)
-    await userEvent.click(getByRole('option', { name: ROLE_VALUE }))
+    await userEvent.click(getByRole('option', { name: ROLE_LABEL }))
 
     const descInput = getByRole('textbox', { name: /Description/i })
     await userEvent.fill(descInput, DESC_VALUE)

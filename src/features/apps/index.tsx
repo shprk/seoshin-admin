@@ -94,9 +94,7 @@ export function Apps() {
       {/* ===== Content ===== */}
       <Main fixed>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight'>
-            앱 연동
-          </h1>
+          <h1 className='text-2xl font-bold tracking-tight'>앱 연동</h1>
           <p className='text-muted-foreground'>
             연동 가능한 앱을 확인하고 연결 상태를 관리할 수 있습니다.
           </p>

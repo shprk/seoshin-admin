@@ -138,7 +138,7 @@ export function DataTableBulkActions<TData>({
       <div
         ref={toolbarRef}
         role='toolbar'
-          aria-label={`선택한 ${selectedCount}개의 ${entityName}에 대한 일괄 작업`}
+        aria-label={`선택한 ${selectedCount}개의 ${entityName}에 대한 일괄 작업`}
         aria-describedby='bulk-actions-description'
         tabIndex={-1}
         onKeyDown={handleKeyDown}
@@ -192,10 +192,7 @@ export function DataTableBulkActions<TData>({
             >
               {selectedCount}
             </Badge>{' '}
-            <span className='hidden sm:inline'>
-              {entityName}
-            </span>{' '}
-            선택됨
+            <span className='hidden sm:inline'>{entityName}</span> 선택됨
           </div>
 
           <Separator

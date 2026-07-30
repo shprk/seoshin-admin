@@ -10,9 +10,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { deleteTask } from '@/lib/api/tasks'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
-import { deleteTask } from '@/lib/api/tasks'
 import {
   Table,
   TableBody,
@@ -101,9 +101,7 @@ export function ScanWorksTable({
     setIsDeleting(true)
     try {
       await deleteTask(pendingDelete.id)
-      setRows((current) =>
-        current.filter((row) => row.id !== pendingDelete.id)
-      )
+      setRows((current) => current.filter((row) => row.id !== pendingDelete.id))
       setPendingDelete(null)
       onDeleted?.()
       toast.success('작업을 삭제했습니다.')

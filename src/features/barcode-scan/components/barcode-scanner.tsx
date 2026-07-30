@@ -15,10 +15,7 @@ type QuaggaDetectedResult = {
 type QuaggaApi = {
   onDetected: (handler: (data: QuaggaDetectedResult) => void) => void
   offDetected: (handler: (data: QuaggaDetectedResult) => void) => void
-  init: (
-    config: Record<string, unknown>,
-    cb: (err: unknown) => void
-  ) => void
+  init: (config: Record<string, unknown>, cb: (err: unknown) => void) => void
   start: () => void
   stop: () => void
 }
@@ -27,10 +24,7 @@ type QuaggaApi = {
  * Quagga2 live camera decoder (1D barcode only).
  * - decodes detected code once, then stops the scanner
  */
-export function BarcodeScanner({
-  active,
-  onDetected,
-}: BarcodeScannerProps) {
+export function BarcodeScanner({ active, onDetected }: BarcodeScannerProps) {
   const interactiveRef = useRef<HTMLDivElement | null>(null)
   const detectedOnceRef = useRef(false)
 

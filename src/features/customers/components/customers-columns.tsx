@@ -1,12 +1,12 @@
-import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
-import { Checkbox } from '@/components/ui/checkbox'
-import { DataTableColumnHeader } from '@/components/data-table'
+import { type ColumnDef } from '@tanstack/react-table'
 import {
   letterFieldLabels,
   letterFields,
   type LetterField,
 } from '@/lib/letter-fields'
+import { Checkbox } from '@/components/ui/checkbox'
+import { DataTableColumnHeader } from '@/components/data-table'
 import { type Customer } from '../data/schema'
 
 type CreateCustomersColumnsOptions = {

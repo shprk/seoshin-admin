@@ -44,9 +44,7 @@ export function Analytics() {
         </Card>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
-              순 방문자 수
-            </CardTitle>
+            <CardTitle className='text-sm font-medium'>순 방문자 수</CardTitle>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 24 24'
@@ -89,7 +87,9 @@ export function Analytics() {
         </Card>
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>평균 세션 시간</CardTitle>
+            <CardTitle className='text-sm font-medium'>
+              평균 세션 시간
+            </CardTitle>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               viewBox='0 0 24 24'

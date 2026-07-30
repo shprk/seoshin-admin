@@ -10,13 +10,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import { updateCustomerLetterArrived } from '@/lib/api/customers'
+import { letterFieldLabels, type LetterField } from '@/lib/letter-fields'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
-import { updateCustomerLetterArrived } from '@/lib/api/customers'
-import {
-  letterFieldLabels,
-  type LetterField,
-} from '@/lib/letter-fields'
 import {
   Table,
   TableBody,
@@ -53,9 +50,8 @@ export function CustomersTable({
   const [rows, setRows] = useState(data)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [pendingChange, setPendingChange] = useState<PendingLetterChange | null>(
-    null
-  )
+  const [pendingChange, setPendingChange] =
+    useState<PendingLetterChange | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {

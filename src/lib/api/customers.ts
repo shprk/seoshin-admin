@@ -1,5 +1,5 @@
-import { type Customer } from '@/features/customers/data/schema'
 import { type LetterField } from '@/lib/letter-fields'
+import { type Customer } from '@/features/customers/data/schema'
 import { apiClient } from './client'
 import { throwApiError } from './error'
 
@@ -86,9 +86,12 @@ export async function updateCustomerLetterArrived(
   letterArrived: boolean
 ): Promise<Customer> {
   try {
-    const { data } = await apiClient.patch<CustomerApiItem>(`/customers/${id}`, {
-      [field]: letterArrived,
-    })
+    const { data } = await apiClient.patch<CustomerApiItem>(
+      `/customers/${id}`,
+      {
+        [field]: letterArrived,
+      }
+    )
     return mapCustomer(data)
   } catch (error) {
     throwApiError(error, '편지 도착 여부를 변경하지 못했습니다.')

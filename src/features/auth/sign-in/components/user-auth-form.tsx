@@ -23,8 +23,7 @@ import { PasswordInput } from '@/components/password-input'
 
 const formSchema = z.object({
   email: z.email({
-    error: (iss) =>
-      iss.input === '' ? '이메일을 입력해주세요.' : undefined,
+    error: (iss) => (iss.input === '' ? '이메일을 입력해주세요.' : undefined),
   }),
   password: z
     .string()

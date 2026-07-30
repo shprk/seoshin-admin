@@ -1,18 +1,18 @@
 import { useMemo, useRef, useState } from 'react'
 import { getCustomerByParticipantNo, createCustomer } from '@/lib/api/customers'
 import { createTask } from '@/lib/api/tasks'
-import type { Customer } from '@/features/customers/data/schema'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { ConfigDrawer } from '@/components/config-drawer'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import { Search } from '@/components/search'
+import { ThemeSwitch } from '@/components/theme-switch'
+import type { Customer } from '@/features/customers/data/schema'
 import { BarcodeScanner } from './components/barcode-scanner'
 
 type LookupState = 'idle' | 'loading' | 'found' | 'not-found' | 'error'
@@ -121,7 +121,9 @@ export function BarcodeScan() {
       setLookupState('found')
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : '고객/작업 등록 중 오류가 발생했습니다.'
+        e instanceof Error
+          ? e.message
+          : '고객/작업 등록 중 오류가 발생했습니다.'
       )
       setLookupState('error')
     } finally {
@@ -164,7 +166,10 @@ export function BarcodeScan() {
           </CardHeader>
           <CardContent className='space-y-4'>
             {lookupState === 'idle' && (
-              <BarcodeScanner active={!scannedCode} onDetected={handleDetected} />
+              <BarcodeScanner
+                active={!scannedCode}
+                onDetected={handleDetected}
+              />
             )}
 
             {lookupState === 'loading' && (
@@ -175,7 +180,7 @@ export function BarcodeScan() {
 
             {lookupState === 'found' && customer && (
               <>
-                <div className='rounded-md border p-3 text-sm space-y-1'>
+                <div className='space-y-1 rounded-md border p-3 text-sm'>
                   <div>
                     <span className='font-medium'>참가번호</span>{' '}
                     {customer.participantNo}

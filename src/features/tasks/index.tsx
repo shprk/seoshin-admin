@@ -1,12 +1,12 @@
-import { getRouteApi } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
+import { getRouteApi } from '@tanstack/react-router'
+import { getTasks } from '@/lib/api/tasks'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { getTasks } from '@/lib/api/tasks'
 import { ScanWorksTable } from './components/scan-works-table'
 
 const route = getRouteApi('/_authenticated/tasks/')
