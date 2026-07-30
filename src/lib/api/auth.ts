@@ -31,7 +31,7 @@ export async function login(
         (error.response?.data as { message?: string } | undefined)?.message ||
         error.message ||
         '로그인에 실패했습니다.'
-      throw new Error(message)
+      throw new Error(message, { cause: error })
     }
     throw error
   }

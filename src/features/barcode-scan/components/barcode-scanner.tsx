@@ -6,6 +6,23 @@ type BarcodeScannerProps = {
   onDetected: (code: string) => void
 }
 
+type QuaggaDetectedResult = {
+  codeResult?: {
+    code?: string | null
+  }
+}
+
+type QuaggaApi = {
+  onDetected: (handler: (data: QuaggaDetectedResult) => void) => void
+  offDetected: (handler: (data: QuaggaDetectedResult) => void) => void
+  init: (
+    config: Record<string, unknown>,
+    cb: (err: unknown) => void
+  ) => void
+  start: () => void
+  stop: () => void
+}
+
 /**
  * Quagga2 live camera decoder (1D barcode only).
  * - decodes detected code once, then stops the scanner
@@ -21,22 +38,22 @@ export function BarcodeScanner({
     if (!active) return
     if (!interactiveRef.current) return
 
-    const QuaggaAny = Quagga as any
+    const quagga = Quagga as unknown as QuaggaApi
     detectedOnceRef.current = false
 
-    const handleDetected = (data: any) => {
-      const code = data?.codeResult?.code
+    const handleDetected = (data: QuaggaDetectedResult) => {
+      const code = data.codeResult?.code
       if (!code) return
       if (detectedOnceRef.current) return
 
       detectedOnceRef.current = true
-      QuaggaAny.stop()
+      quagga.stop()
       onDetected(String(code))
     }
 
-    QuaggaAny.onDetected(handleDetected)
+    quagga.onDetected(handleDetected)
 
-    QuaggaAny.init(
+    quagga.init(
       {
         locate: true,
         inputStream: {
@@ -60,24 +77,24 @@ export function BarcodeScanner({
         },
         frequency: 10,
       },
-      (err: any) => {
+      (err: unknown) => {
         if (err) {
           // eslint-disable-next-line no-console
           console.error('Quagga init error:', err)
           return
         }
-        QuaggaAny.start()
+        quagga.start()
       }
     )
 
     return () => {
       try {
-        QuaggaAny.offDetected(handleDetected)
+        quagga.offDetected(handleDetected)
       } catch {
         // ignore if offDetected signature differs
       }
       try {
-        QuaggaAny.stop()
+        quagga.stop()
       } catch {
         // ignore
       }
@@ -96,4 +113,3 @@ export function BarcodeScanner({
     </div>
   )
 }
-

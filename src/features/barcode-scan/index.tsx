@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { getCustomerByParticipantNo, createCustomer } from '@/lib/api/customers'
 import { createTask } from '@/lib/api/tasks'
 import type { Customer } from '@/features/customers/data/schema'
@@ -37,62 +37,61 @@ export function BarcodeScan() {
   const [address, setAddress] = useState('')
   const [memo, setMemo] = useState('')
   const [creating, setCreating] = useState(false)
+  const requestIdRef = useRef(0)
 
   const participantNo = useMemo(
     () => (scannedCode ? String(scannedCode) : ''),
     [scannedCode]
   )
 
-  useEffect(() => {
-    if (!scannedCode) return
-
-    let cancelled = false
-    setLookupState('loading')
-    setError(null)
-    setCustomer(null)
+  const resetFormFields = () => {
     setName('')
     setMatchedParticipantNo('')
     setAddress('')
     setMemo('')
+  }
+
+  const handleDetected = (code: string) => {
+    if (scannedCode === code) return
+
+    const requestId = ++requestIdRef.current
+    setScannedCode(code)
+    setLookupState('loading')
+    setError(null)
+    setCustomer(null)
+    resetFormFields()
 
     void (async () => {
       try {
-        const found = await getCustomerByParticipantNo(scannedCode)
-        if (cancelled) return
+        const found = await getCustomerByParticipantNo(code)
+        if (requestId !== requestIdRef.current) return
 
         if (found) {
           await createTaskFromCustomer(found)
-          if (cancelled) return
+          if (requestId !== requestIdRef.current) return
           setCustomer(found)
           setLookupState('found')
         } else {
           setLookupState('not-found')
         }
       } catch (e) {
-        if (cancelled) return
+        if (requestId !== requestIdRef.current) return
         setError(
           e instanceof Error ? e.message : '스캔 처리 중 오류가 발생했습니다.'
         )
         setLookupState('error')
       }
     })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [scannedCode])
-
-  const handleDetected = (code: string) => {
-    if (scannedCode === code) return
-    setScannedCode(code)
   }
 
   const reset = () => {
+    requestIdRef.current += 1
     setScannedCode(null)
     setLookupState('idle')
     setCustomer(null)
     setError(null)
     setCreating(false)
+    resetFormFields()
   }
 
   const canCreate = useMemo(() => {

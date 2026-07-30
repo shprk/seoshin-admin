@@ -1,7 +1,7 @@
 import { type Customer } from '@/features/customers/data/schema'
 import { type LetterField } from '@/lib/letter-fields'
 import { apiClient } from './client'
-import { getApiErrorMessage } from './error'
+import { throwApiError } from './error'
 
 type CustomerApiItem = Omit<Customer, 'createdAt'> & {
   createdAt: string | Date
@@ -37,7 +37,7 @@ export async function getCustomers(): Promise<CustomersListResponse> {
       items: data.items.map(mapCustomer),
     }
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, '고객 목록을 불러오지 못했습니다.'))
+    throwApiError(error, '고객 목록을 불러오지 못했습니다.')
   }
 }
 
@@ -48,7 +48,7 @@ export async function getCustomerByParticipantNo(
     const { items } = await getCustomers()
     return items.find((item) => item.participantNo === participantNo) ?? null
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, '고객 정보를 불러오지 못했습니다.'))
+    throwApiError(error, '고객 정보를 불러오지 못했습니다.')
   }
 }
 
@@ -76,7 +76,7 @@ export async function createCustomer(
     })
     return mapCustomer(data)
   } catch (error) {
-    throw new Error(getApiErrorMessage(error, '고객을 생성하지 못했습니다.'))
+    throwApiError(error, '고객을 생성하지 못했습니다.')
   }
 }
 
@@ -91,8 +91,6 @@ export async function updateCustomerLetterArrived(
     })
     return mapCustomer(data)
   } catch (error) {
-    throw new Error(
-      getApiErrorMessage(error, '편지 도착 여부를 변경하지 못했습니다.')
-    )
+    throwApiError(error, '편지 도착 여부를 변경하지 못했습니다.')
   }
 }

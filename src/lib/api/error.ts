@@ -19,3 +19,7 @@ export function getApiErrorMessage(error: unknown, fallback: string) {
 
   return fallback
 }
+
+export function throwApiError(error: unknown, fallback: string): never {
+  throw new Error(getApiErrorMessage(error, fallback), { cause: error })
+}

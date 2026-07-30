@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const scanWorkSchema = z.object({
+const _scanWorkSchema = z.object({
   id: z.string(),
   name: z.string(),
   participantNo: z.string(),
@@ -9,4 +9,4 @@ const scanWorkSchema = z.object({
   createdAt: z.coerce.date(),
 })
 
-export type ScanWork = z.infer<typeof scanWorkSchema>
+export type ScanWork = z.infer<typeof _scanWorkSchema>

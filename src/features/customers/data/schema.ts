@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const customerSchema = z.object({
+const _customerSchema = z.object({
   id: z.string(),
   name: z.string(),
   participantNo: z.string(),
@@ -13,4 +13,4 @@ const customerSchema = z.object({
   createdAt: z.coerce.date(),
 })
 
-export type Customer = z.infer<typeof customerSchema>
+export type Customer = z.infer<typeof _customerSchema>
