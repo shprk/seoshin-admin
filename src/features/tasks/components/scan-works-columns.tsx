@@ -1,24 +1,16 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { DataTableColumnHeader } from '@/components/data-table'
-import {
-  letterFieldLabels,
-  letterFields,
-  type LetterField,
-  type ScanWork,
-} from '../data/scan-work-schema'
+import { type ScanWork } from '../data/scan-work-schema'
 
 type CreateScanWorksColumnsOptions = {
-  onLetterArrivedChange: (
-    id: string,
-    field: LetterField,
-    letterArrived: boolean
-  ) => void
+  onDelete: (row: ScanWork) => void
 }
 
 export function createScanWorksColumns({
-  onLetterArrivedChange,
+  onDelete,
 }: CreateScanWorksColumnsOptions): ColumnDef<ScanWork>[] {
   return [
     {
@@ -59,48 +51,39 @@ export function createScanWorksColumns({
       enableSorting: false,
     },
     {
-      id: 'letterArrived',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='편지 도착 여부' />
-      ),
-      cell: ({ row }) => (
-        <div className='flex flex-col gap-2 py-1'>
-          {letterFields.map((field) => (
-            <label
-              key={field}
-              className='flex items-center gap-2 text-sm whitespace-nowrap'
-            >
-              <Checkbox
-                checked={row.original[field]}
-                onCheckedChange={(checked) => {
-                  onLetterArrivedChange(row.original.id, field, checked === true)
-                }}
-                aria-label={`${row.original.name} ${letterFieldLabels[field]}`}
-              />
-              <span>{letterFieldLabels[field]}</span>
-            </label>
-          ))}
-        </div>
-      ),
-      enableSorting: false,
-    },
-    {
-      accessorKey: 'barcode',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='바코드' />
-      ),
-      cell: ({ row }) => <div>{row.getValue('barcode')}</div>,
-      enableSorting: false,
-    },
-    {
       accessorKey: 'createdAt',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='등록일' />
+        <DataTableColumnHeader column={column} title='등록일시' />
       ),
       cell: ({ row }) => {
         const date = row.getValue('createdAt') as Date
-        return <div>{format(date, 'yyyy-MM-dd')}</div>
+        return (
+          <div className='whitespace-nowrap'>
+            <span>{format(date, 'yyyy-MM-dd')}</span>{' '}
+            <span className='text-xs text-muted-foreground'>
+              {format(date, 'HH:mm')}
+            </span>
+          </div>
+        )
       },
+    },
+    {
+      id: 'actions',
+      header: () => <span className='sr-only'>삭제</span>,
+      cell: ({ row }) => (
+        <Button
+          type='button'
+          variant='ghost'
+          size='icon'
+          className='text-destructive hover:text-destructive'
+          onClick={() => onDelete(row.original)}
+          aria-label={`${row.original.name} 작업 삭제`}
+        >
+          <Trash2 className='size-4' />
+        </Button>
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
   ]
 }

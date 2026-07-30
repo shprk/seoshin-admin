@@ -1,4 +1,4 @@
-import { type LetterField, type ScanWork } from '@/features/tasks/data/scan-work-schema'
+import { type ScanWork } from '@/features/tasks/data/scan-work-schema'
 import { apiClient } from './client'
 import { getApiErrorMessage } from './error'
 
@@ -11,13 +11,18 @@ export type TasksListResponse = {
   total: number
 }
 
+export type CreateTaskPayload = {
+  name: string
+  participantNo: string
+  matchedParticipantNo: string | null
+  address: string
+}
+
 function mapTask(item: TaskApiItem): ScanWork {
   return {
     ...item,
+    matchedParticipantNo: item.matchedParticipantNo ?? null,
     address: item.address ?? '',
-    letter1Arrived: item.letter1Arrived ?? false,
-    letter2Arrived: item.letter2Arrived ?? false,
-    letter3Arrived: item.letter3Arrived ?? false,
     createdAt: new Date(item.createdAt),
   }
 }
@@ -38,19 +43,21 @@ export async function getTasks(): Promise<TasksListResponse> {
   }
 }
 
-export async function updateTaskLetterArrived(
-  id: string,
-  field: LetterField,
-  letterArrived: boolean
+export async function createTask(
+  payload: CreateTaskPayload
 ): Promise<ScanWork> {
   try {
-    const { data } = await apiClient.patch<TaskApiItem>(`/tasks/${id}`, {
-      [field]: letterArrived,
-    })
+    const { data } = await apiClient.post<TaskApiItem>('/tasks', payload)
     return mapTask(data)
   } catch (error) {
-    throw new Error(
-      getApiErrorMessage(error, '편지 도착 여부를 변경하지 못했습니다.')
-    )
+    throw new Error(getApiErrorMessage(error, '작업을 등록하지 못했습니다.'))
+  }
+}
+
+export async function deleteTask(id: string): Promise<void> {
+  try {
+    await apiClient.delete(`/tasks/${id}`)
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error, '작업을 삭제하지 못했습니다.'))
   }
 }

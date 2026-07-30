@@ -12,7 +12,7 @@ import {
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
-import { updateTaskLetterArrived } from '@/lib/api/tasks'
+import { deleteTask } from '@/lib/api/tasks'
 import {
   Table,
   TableBody,
@@ -23,40 +23,27 @@ import {
 } from '@/components/ui/table'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import {
-  letterFieldLabels,
-  type LetterField,
-  type ScanWork,
-} from '../data/scan-work-schema'
+import { type ScanWork } from '../data/scan-work-schema'
 import { createScanWorksColumns } from './scan-works-columns'
 
 type ScanWorksTableProps = {
   data: ScanWork[]
   search: Record<string, unknown>
   navigate: NavigateFn
-  onLetterArrivedUpdated?: () => void
-}
-
-type PendingLetterChange = {
-  id: string
-  name: string
-  field: LetterField
-  letterArrived: boolean
+  onDeleted?: () => void
 }
 
 export function ScanWorksTable({
   data,
   search,
   navigate,
-  onLetterArrivedUpdated,
+  onDeleted,
 }: ScanWorksTableProps) {
   const [rows, setRows] = useState(data)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [pendingChange, setPendingChange] = useState<PendingLetterChange | null>(
-    null
-  )
-  const [isUpdating, setIsUpdating] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<ScanWork | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     setRows(data)
@@ -65,19 +52,9 @@ export function ScanWorksTable({
   const columns = useMemo(
     () =>
       createScanWorksColumns({
-        onLetterArrivedChange: (id, field, letterArrived) => {
-          const target = rows.find((row) => row.id === id)
-          if (!target || target[field] === letterArrived) return
-
-          setPendingChange({
-            id,
-            name: target.name,
-            field,
-            letterArrived,
-          })
-        },
+        onDelete: (row) => setPendingDelete(row),
       }),
-    [rows]
+    []
   )
 
   const {
@@ -118,31 +95,24 @@ export function ScanWorksTable({
     ensurePageInRange(table.getPageCount())
   }, [table, ensurePageInRange])
 
-  const handleConfirmLetterChange = async () => {
-    if (!pendingChange) return
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return
 
-    setIsUpdating(true)
+    setIsDeleting(true)
     try {
-      const updated = await updateTaskLetterArrived(
-        pendingChange.id,
-        pendingChange.field,
-        pendingChange.letterArrived
-      )
-
+      await deleteTask(pendingDelete.id)
       setRows((current) =>
-        current.map((row) => (row.id === updated.id ? updated : row))
+        current.filter((row) => row.id !== pendingDelete.id)
       )
-      setPendingChange(null)
-      onLetterArrivedUpdated?.()
-      toast.success('편지 도착 여부를 변경했습니다.')
+      setPendingDelete(null)
+      onDeleted?.()
+      toast.success('작업을 삭제했습니다.')
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : '편지 도착 여부를 변경하지 못했습니다.'
+        error instanceof Error ? error.message : '작업을 삭제하지 못했습니다.'
       )
     } finally {
-      setIsUpdating(false)
+      setIsDeleting(false)
     }
   }
 
@@ -201,25 +171,22 @@ export function ScanWorksTable({
       <DataTablePagination table={table} className='mt-auto' />
 
       <ConfirmDialog
-        open={!!pendingChange}
+        open={!!pendingDelete}
         onOpenChange={(open) => {
-          if (!open && !isUpdating) setPendingChange(null)
+          if (!open && !isDeleting) setPendingDelete(null)
         }}
-        title='편지 도착 여부 변경'
+        title='작업 삭제'
         desc={
-          pendingChange
-            ? `${pendingChange.name}님의 ${
-                letterFieldLabels[pendingChange.field]
-              }를 "${
-                pendingChange.letterArrived ? '도착' : '미도착'
-              }"으로 변경할까요?`
+          pendingDelete
+            ? `${pendingDelete.name}(${pendingDelete.participantNo}) 작업 기록을 삭제할까요?`
             : ''
         }
         cancelBtnText='취소'
-        confirmText='변경'
-        isLoading={isUpdating}
+        confirmText='삭제'
+        destructive
+        isLoading={isDeleting}
         handleConfirm={() => {
-          void handleConfirmLetterChange()
+          void handleConfirmDelete()
         }}
       />
     </div>

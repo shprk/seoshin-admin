@@ -4,8 +4,11 @@ const customerSchema = z.object({
   id: z.string(),
   name: z.string(),
   participantNo: z.string(),
-  phone: z.string(),
-  ageGroup: z.string(),
+  matchedParticipantNo: z.string().nullable(),
+  address: z.string(),
+  letter1Arrived: z.boolean(),
+  letter2Arrived: z.boolean(),
+  letter3Arrived: z.boolean(),
   memo: z.string(),
   createdAt: z.coerce.date(),
 })

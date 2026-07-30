@@ -49,7 +49,17 @@ export const sidebarData: SidebarData = {
           icon: LayoutDashboard,
         },
         {
-          title: '작업',
+          title: '고객',
+          url: '/customers',
+          icon: ContactRound,
+        },
+        {
+          title: '바코드 스캔',
+          url: '/barcode-scan',
+          icon: Scan,
+        },
+        {
+          title: '스캔 기록',
           url: '/tasks',
           icon: ListTodo,
         },
@@ -65,11 +75,6 @@ export const sidebarData: SidebarData = {
         //   badge: '3',
         //   icon: MessagesSquare,
         // },
-        {
-          title: '고객',
-          url: '/customers',
-          icon: ContactRound,
-        },
         // 복원 시 icon import 추가: Users
         // {
         //   title: '사용자',
@@ -97,70 +102,70 @@ export const sidebarData: SidebarData = {
         // },
       ],
     },
-    {
-      title: '페이지',
-      items: [
-        // 복원 시 icon import 추가:
-        // ShieldCheck, Bug, Lock, UserX, FileX, ServerOff, Construction
-        // {
-        //   title: '인증',
-        //   icon: ShieldCheck,
-        //   items: [
-        //     {
-        //       title: '로그인',
-        //       url: '/sign-in',
-        //     },
-        //     {
-        //       title: '로그인 (2단)',
-        //       url: '/sign-in-2',
-        //     },
-        //     {
-        //       title: '회원가입',
-        //       url: '/sign-up',
-        //     },
-        //     {
-        //       title: '비밀번호 찾기',
-        //       url: '/forgot-password',
-        //     },
-        //     {
-        //       title: 'OTP',
-        //       url: '/otp',
-        //     },
-        //   ],
-        // },
-        // {
-        //   title: '에러',
-        //   icon: Bug,
-        //   items: [
-        //     {
-        //       title: '인증 필요',
-        //       url: '/errors/unauthorized',
-        //       icon: Lock,
-        //     },
-        //     {
-        //       title: '접근 금지',
-        //       url: '/errors/forbidden',
-        //       icon: UserX,
-        //     },
-        //     {
-        //       title: '페이지 없음',
-        //       url: '/errors/not-found',
-        //       icon: FileX,
-        //     },
-        //     {
-        //       title: '서버 오류',
-        //       url: '/errors/internal-server-error',
-        //       icon: ServerOff,
-        //     },
-        //     {
-        //       title: '점검 중',
-        //       url: '/errors/maintenance-error',
-        //       icon: Construction,
-        //     },
-        //   ],
-        // },
-      ],
-    },
+    // {
+    //   title: '페이지',
+    //   items: [
+    //     // 복원 시 icon import 추가:
+    //     // ShieldCheck, Bug, Lock, UserX, FileX, ServerOff, Construction
+    //     // {
+    //     //   title: '인증',
+    //     //   icon: ShieldCheck,
+    //     //   items: [
+    //     //     {
+    //     //       title: '로그인',
+    //     //       url: '/sign-in',
+    //     //     },
+    //     //     {
+    //     //       title: '로그인 (2단)',
+    //     //       url: '/sign-in-2',
+    //     //     },
+    //     //     {
+    //     //       title: '회원가입',
+    //     //       url: '/sign-up',
+    //     //     },
+    //     //     {
+    //     //       title: '비밀번호 찾기',
+    //     //       url: '/forgot-password',
+    //     //     },
+    //     //     {
+    //     //       title: 'OTP',
+    //     //       url: '/otp',
+    //     //     },
+    //     //   ],
+    //     // },
+    //     // {
+    //     //   title: '에러',
+    //     //   icon: Bug,
+    //     //   items: [
+    //     //     {
+    //     //       title: '인증 필요',
+    //     //       url: '/errors/unauthorized',
+    //     //       icon: Lock,
+    //     //     },
+    //     //     {
+    //     //       title: '접근 금지',
+    //     //       url: '/errors/forbidden',
+    //     //       icon: UserX,
+    //     //     },
+    //     //     {
+    //     //       title: '페이지 없음',
+    //     //       url: '/errors/not-found',
+    //     //       icon: FileX,
+    //     //     },
+    //     //     {
+    //     //       title: '서버 오류',
+    //     //       url: '/errors/internal-server-error',
+    //     //       icon: ServerOff,
+    //     //     },
+    //     //     {
+    //     //       title: '점검 중',
+    //     //       url: '/errors/maintenance-error',
+    //     //       icon: Construction,
+    //     //     },
+    //     //   ],
+    //     // },
+    //   ],
+    // },
     {
       title: '기타',
       items: [
@@ -194,11 +199,6 @@ export const sidebarData: SidebarData = {
               icon: Monitor,
             },
           ],
-        },
-        {
-          title: '바코드 스캔',
-          url: '/barcode-scan',
-          icon: Scan,
         },
         {
           title: '도움말 센터',

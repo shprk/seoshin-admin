@@ -31,9 +31,9 @@ export function Tasks() {
       <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>작업</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>스캔 기록</h2>
             <p className='text-muted-foreground'>
-              바코드 스캔으로 등록·조회된 작업 기록입니다.
+              바코드 스캔으로 등록된 기록입니다.
             </p>
           </div>
         </div>
@@ -51,7 +51,7 @@ export function Tasks() {
             data={data?.items ?? []}
             search={search}
             navigate={navigate}
-            onLetterArrivedUpdated={() => {
+            onDeleted={() => {
               void refetch()
             }}
           />

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getCustomerByParticipantNo, createCustomer } from '@/lib/api/customers'
+import { createTask } from '@/lib/api/tasks'
 import type { Customer } from '@/features/customers/data/schema'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -16,6 +17,15 @@ import { BarcodeScanner } from './components/barcode-scanner'
 
 type LookupState = 'idle' | 'loading' | 'found' | 'not-found' | 'error'
 
+async function createTaskFromCustomer(customer: Customer) {
+  return createTask({
+    name: customer.name,
+    participantNo: customer.participantNo,
+    matchedParticipantNo: customer.matchedParticipantNo,
+    address: customer.address,
+  })
+}
+
 export function BarcodeScan() {
   const [scannedCode, setScannedCode] = useState<string | null>(null)
   const [lookupState, setLookupState] = useState<LookupState>('idle')
@@ -23,8 +33,8 @@ export function BarcodeScan() {
   const [error, setError] = useState<string | null>(null)
 
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [ageGroup, setAgeGroup] = useState('')
+  const [matchedParticipantNo, setMatchedParticipantNo] = useState('')
+  const [address, setAddress] = useState('')
   const [memo, setMemo] = useState('')
   const [creating, setCreating] = useState(false)
 
@@ -41,8 +51,8 @@ export function BarcodeScan() {
     setError(null)
     setCustomer(null)
     setName('')
-    setPhone('')
-    setAgeGroup('')
+    setMatchedParticipantNo('')
+    setAddress('')
     setMemo('')
 
     void (async () => {
@@ -51,6 +61,8 @@ export function BarcodeScan() {
         if (cancelled) return
 
         if (found) {
+          await createTaskFromCustomer(found)
+          if (cancelled) return
           setCustomer(found)
           setLookupState('found')
         } else {
@@ -58,7 +70,9 @@ export function BarcodeScan() {
         }
       } catch (e) {
         if (cancelled) return
-        setError(e instanceof Error ? e.message : '고객 조회 중 오류가 발생했습니다.')
+        setError(
+          e instanceof Error ? e.message : '스캔 처리 중 오류가 발생했습니다.'
+        )
         setLookupState('error')
       }
     })()
@@ -69,7 +83,6 @@ export function BarcodeScan() {
   }, [scannedCode])
 
   const handleDetected = (code: string) => {
-    // Prevent duplicate lookups for the same scan session
     if (scannedCode === code) return
     setScannedCode(code)
   }
@@ -85,9 +98,8 @@ export function BarcodeScan() {
   const canCreate = useMemo(() => {
     if (!participantNo) return false
     if (!name.trim()) return false
-    if (!phone.trim()) return false
     return true
-  }, [participantNo, name, phone])
+  }, [participantNo, name])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,14 +113,17 @@ export function BarcodeScan() {
       const created = await createCustomer({
         participantNo: scannedCode,
         name: name.trim(),
-        phone: phone.trim(),
-        ageGroup: ageGroup.trim(),
+        matchedParticipantNo: matchedParticipantNo.trim() || null,
+        address: address.trim(),
         memo: memo.trim(),
       })
+      await createTaskFromCustomer(created)
       setCustomer(created)
       setLookupState('found')
     } catch (e) {
-      setError(e instanceof Error ? e.message : '고객 생성 중 오류가 발생했습니다.')
+      setError(
+        e instanceof Error ? e.message : '고객/작업 등록 중 오류가 발생했습니다.'
+      )
       setLookupState('error')
     } finally {
       setCreating(false)
@@ -129,8 +144,7 @@ export function BarcodeScan() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>바코드 스캔</h2>
             <p className='text-muted-foreground'>
-              편지지에 붙은 1D 바코드를 스캔해 고객을 조회하고,
-              없으면 등록합니다.
+              바코드를 스캔하면 고객을 조회·등록하고, 작업 기록을 누적합니다.
             </p>
           </div>
         </div>
@@ -141,9 +155,9 @@ export function BarcodeScan() {
               {lookupState === 'idle'
                 ? '카메라로 바코드를 스캔하세요'
                 : lookupState === 'loading'
-                  ? '고객을 조회하는 중...'
+                  ? '처리 중...'
                   : lookupState === 'found'
-                    ? '고객 조회 완료'
+                    ? '작업 등록 완료'
                     : lookupState === 'not-found'
                       ? '해당 고객이 없습니다 (등록 진행)'
                       : '오류'}
@@ -155,26 +169,32 @@ export function BarcodeScan() {
             )}
 
             {lookupState === 'loading' && (
-              <div className='text-sm text-muted-foreground'>잠시만 기다려주세요.</div>
+              <div className='text-sm text-muted-foreground'>
+                잠시만 기다려주세요.
+              </div>
             )}
 
             {lookupState === 'found' && customer && (
               <>
-                <div className='rounded-md border p-3 text-sm'>
+                <div className='rounded-md border p-3 text-sm space-y-1'>
                   <div>
-                    <span className='font-medium'>참가번호</span> {customer.participantNo}
+                    <span className='font-medium'>참가번호</span>{' '}
+                    {customer.participantNo}
                   </div>
                   <div>
                     <span className='font-medium'>이름</span> {customer.name}
                   </div>
                   <div>
-                    <span className='font-medium'>전화번호</span> {customer.phone}
+                    <span className='font-medium'>매칭상대 참가번호</span>{' '}
+                    {customer.matchedParticipantNo || '-'}
                   </div>
                   <div>
-                    <span className='font-medium'>연령대</span> {customer.ageGroup}
+                    <span className='font-medium'>주소</span>{' '}
+                    {customer.address || '-'}
                   </div>
                   <div>
-                    <span className='font-medium'>메모</span> {customer.memo || '-'}
+                    <span className='font-medium'>메모</span>{' '}
+                    {customer.memo || '-'}
                   </div>
                 </div>
 
@@ -188,7 +208,9 @@ export function BarcodeScan() {
 
             {lookupState === 'not-found' && scannedCode && (
               <form onSubmit={handleCreate} className='space-y-4'>
-                {error && <div className='text-sm text-destructive'>{error}</div>}
+                {error && (
+                  <div className='text-sm text-destructive'>{error}</div>
+                )}
 
                 <div className='grid gap-2'>
                   <Label>참가번호 (스캔값)</Label>
@@ -197,24 +219,28 @@ export function BarcodeScan() {
 
                 <div className='grid gap-2'>
                   <Label>이름</Label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} required />
-                </div>
-
-                <div className='grid gap-2'>
-                  <Label>전화번호</Label>
                   <Input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                   />
                 </div>
 
                 <div className='grid gap-2'>
-                  <Label>연령대</Label>
+                  <Label>매칭상대 참가번호</Label>
                   <Input
-                    value={ageGroup}
-                    onChange={(e) => setAgeGroup(e.target.value)}
-                    placeholder='예: 10대/20대/기타'
+                    value={matchedParticipantNo}
+                    onChange={(e) => setMatchedParticipantNo(e.target.value)}
+                    placeholder='선택 입력'
+                  />
+                </div>
+
+                <div className='grid gap-2'>
+                  <Label>주소</Label>
+                  <Input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder='선택 입력'
                   />
                 </div>
 
@@ -230,9 +256,14 @@ export function BarcodeScan() {
 
                 <div className='flex items-center gap-2'>
                   <Button type='submit' disabled={!canCreate || creating}>
-                    {creating ? '등록 중...' : '고객 등록'}
+                    {creating ? '등록 중...' : '고객·작업 등록'}
                   </Button>
-                  <Button type='button' variant='outline' onClick={reset} disabled={creating}>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={reset}
+                    disabled={creating}
+                  >
                     취소
                   </Button>
                 </div>
@@ -241,7 +272,9 @@ export function BarcodeScan() {
 
             {lookupState === 'error' && (
               <>
-                {error && <div className='text-sm text-destructive'>{error}</div>}
+                {error && (
+                  <div className='text-sm text-destructive'>{error}</div>
+                )}
                 <Button variant='outline' onClick={reset}>
                   다시 스캔
                 </Button>
@@ -253,4 +286,3 @@ export function BarcodeScan() {
     </>
   )
 }
-

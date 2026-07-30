@@ -14,12 +14,7 @@ const route = getRouteApi('/_authenticated/customers/')
 export function Customers() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['customers'],
     queryFn: getCustomers,
   })
@@ -56,6 +51,9 @@ export function Customers() {
             data={data?.items ?? []}
             search={search}
             navigate={navigate}
+            onLetterArrivedUpdated={() => {
+              void refetch()
+            }}
           />
         )}
       </Main>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   type SortingState,
   type VisibilityState,
@@ -9,8 +9,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
+import { updateCustomerLetterArrived } from '@/lib/api/customers'
+import {
+  letterFieldLabels,
+  type LetterField,
+} from '@/lib/letter-fields'
 import {
   Table,
   TableBody,
@@ -19,23 +25,60 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type Customer } from '../data/schema'
-import { customersColumns as columns } from './customers-columns'
+import { createCustomersColumns } from './customers-columns'
 
 type CustomersTableProps = {
   data: Customer[]
   search: Record<string, unknown>
   navigate: NavigateFn
+  onLetterArrivedUpdated?: () => void
+}
+
+type PendingLetterChange = {
+  id: string
+  name: string
+  field: LetterField
+  letterArrived: boolean
 }
 
 export function CustomersTable({
   data,
   search,
   navigate,
+  onLetterArrivedUpdated,
 }: CustomersTableProps) {
+  const [rows, setRows] = useState(data)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [pendingChange, setPendingChange] = useState<PendingLetterChange | null>(
+    null
+  )
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  useEffect(() => {
+    setRows(data)
+  }, [data])
+
+  const columns = useMemo(
+    () =>
+      createCustomersColumns({
+        onLetterArrivedChange: (id, field, letterArrived) => {
+          const target = rows.find((row) => row.id === id)
+          if (!target || target[field] === letterArrived) return
+
+          setPendingChange({
+            id,
+            name: target.name,
+            field,
+            letterArrived,
+          })
+        },
+      }),
+    [rows]
+  )
 
   const {
     columnFilters,
@@ -53,7 +96,7 @@ export function CustomersTable({
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data,
+    data: rows,
     columns,
     state: {
       sorting,
@@ -74,6 +117,34 @@ export function CustomersTable({
   useEffect(() => {
     ensurePageInRange(table.getPageCount())
   }, [table, ensurePageInRange])
+
+  const handleConfirmLetterChange = async () => {
+    if (!pendingChange) return
+
+    setIsUpdating(true)
+    try {
+      const updated = await updateCustomerLetterArrived(
+        pendingChange.id,
+        pendingChange.field,
+        pendingChange.letterArrived
+      )
+
+      setRows((current) =>
+        current.map((row) => (row.id === updated.id ? updated : row))
+      )
+      setPendingChange(null)
+      onLetterArrivedUpdated?.()
+      toast.success('편지 도착 여부를 변경했습니다.')
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : '편지 도착 여부를 변경하지 못했습니다.'
+      )
+    } finally {
+      setIsUpdating(false)
+    }
+  }
 
   return (
     <div className={cn('flex flex-1 flex-col gap-4')}>
@@ -128,6 +199,29 @@ export function CustomersTable({
         </Table>
       </div>
       <DataTablePagination table={table} className='mt-auto' />
+
+      <ConfirmDialog
+        open={!!pendingChange}
+        onOpenChange={(open) => {
+          if (!open && !isUpdating) setPendingChange(null)
+        }}
+        title='편지 도착 여부 변경'
+        desc={
+          pendingChange
+            ? `${pendingChange.name}님의 ${
+                letterFieldLabels[pendingChange.field]
+              }를 "${
+                pendingChange.letterArrived ? '도착' : '미도착'
+              }"으로 변경할까요?`
+            : ''
+        }
+        cancelBtnText='취소'
+        confirmText='변경'
+        isLoading={isUpdating}
+        handleConfirm={() => {
+          void handleConfirmLetterChange()
+        }}
+      />
     </div>
   )
 }

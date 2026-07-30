@@ -1,5 +1,6 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useAuthStore } from '@/stores/auth-store'
+import { useSessionStore } from '@/stores/session-store'
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -15,3 +16,21 @@ apiClient.interceptors.request.use((config) => {
   }
   return config
 })
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error instanceof AxiosError && error.response?.status === 401) {
+      const { auth } = useAuthStore.getState()
+      const hadSession = Boolean(auth.accessToken)
+      const onSignIn = window.location.pathname.includes('/sign-in')
+
+      if (hadSession && !onSignIn) {
+        auth.reset()
+        useSessionStore.getState().openExpired(window.location.href)
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
