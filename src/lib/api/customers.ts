@@ -1,3 +1,4 @@
+import { type AgeGroup } from '@/lib/age-groups'
 import { type LetterField } from '@/lib/letter-fields'
 import { type Customer } from '@/features/customers/data/schema'
 import { apiClient } from './client'
@@ -16,6 +17,7 @@ function mapCustomer(item: CustomerApiItem): Customer {
   return {
     ...item,
     matchedParticipantNo: item.matchedParticipantNo ?? null,
+    ageGroup: item.ageGroup ?? null,
     address: item.address ?? '',
     letter1Arrived: item.letter1Arrived ?? false,
     letter2Arrived: item.letter2Arrived ?? false,
@@ -55,6 +57,7 @@ export async function getCustomerByParticipantNo(
 export type CreateCustomerPayload = {
   participantNo: string
   name: string
+  ageGroup: AgeGroup
   matchedParticipantNo?: string | null
   address?: string
   memo?: string
@@ -67,6 +70,7 @@ export async function createCustomer(
     const { data } = await apiClient.post<CustomerApiItem>('/customers', {
       participantNo: payload.participantNo,
       name: payload.name,
+      ageGroup: payload.ageGroup,
       matchedParticipantNo: payload.matchedParticipantNo ?? null,
       address: payload.address ?? '',
       memo: payload.memo ?? '',
@@ -77,6 +81,29 @@ export async function createCustomer(
     return mapCustomer(data)
   } catch (error) {
     throwApiError(error, '고객을 생성하지 못했습니다.')
+  }
+}
+
+export type UpdateCustomerPayload = {
+  name: string
+  ageGroup: AgeGroup
+  matchedParticipantNo: string | null
+  address: string
+  memo: string
+}
+
+export async function updateCustomer(
+  id: string,
+  payload: UpdateCustomerPayload
+): Promise<Customer> {
+  try {
+    const { data } = await apiClient.patch<CustomerApiItem>(
+      `/customers/${id}`,
+      payload
+    )
+    return mapCustomer(data)
+  } catch (error) {
+    throwApiError(error, '고객 정보를 수정하지 못했습니다.')
   }
 }
 

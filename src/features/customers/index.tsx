@@ -51,7 +51,7 @@ export function Customers() {
             data={data?.items ?? []}
             search={search}
             navigate={navigate}
-            onLetterArrivedUpdated={() => {
+            onCustomerUpdated={() => {
               void refetch()
             }}
           />

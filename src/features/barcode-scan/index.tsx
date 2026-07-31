@@ -1,10 +1,18 @@
 import { useMemo, useRef, useState } from 'react'
+import { ageGroups, type AgeGroup } from '@/lib/age-groups'
 import { getCustomerByParticipantNo, createCustomer } from '@/lib/api/customers'
 import { createTask } from '@/lib/api/tasks'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
@@ -33,6 +41,7 @@ export function BarcodeScan() {
   const [error, setError] = useState<string | null>(null)
 
   const [name, setName] = useState('')
+  const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('')
   const [matchedParticipantNo, setMatchedParticipantNo] = useState('')
   const [address, setAddress] = useState('')
   const [memo, setMemo] = useState('')
@@ -46,6 +55,7 @@ export function BarcodeScan() {
 
   const resetFormFields = () => {
     setName('')
+    setAgeGroup('')
     setMatchedParticipantNo('')
     setAddress('')
     setMemo('')
@@ -97,13 +107,14 @@ export function BarcodeScan() {
   const canCreate = useMemo(() => {
     if (!participantNo) return false
     if (!name.trim()) return false
+    if (!ageGroup) return false
     return true
-  }, [participantNo, name])
+  }, [participantNo, name, ageGroup])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!scannedCode) return
-    if (!canCreate) return
+    if (!canCreate || !ageGroup) return
 
     setCreating(true)
     setError(null)
@@ -112,6 +123,7 @@ export function BarcodeScan() {
       const created = await createCustomer({
         participantNo: scannedCode,
         name: name.trim(),
+        ageGroup,
         matchedParticipantNo: matchedParticipantNo.trim() || null,
         address: address.trim(),
         memo: memo.trim(),
@@ -189,6 +201,10 @@ export function BarcodeScan() {
                     <span className='font-medium'>이름</span> {customer.name}
                   </div>
                   <div>
+                    <span className='font-medium'>연령</span>{' '}
+                    {customer.ageGroup || '-'}
+                  </div>
+                  <div>
                     <span className='font-medium'>매칭상대 참가번호</span>{' '}
                     {customer.matchedParticipantNo || '-'}
                   </div>
@@ -228,6 +244,25 @@ export function BarcodeScan() {
                     onChange={(e) => setName(e.target.value)}
                     required
                   />
+                </div>
+
+                <div className='grid gap-2'>
+                  <Label>연령</Label>
+                  <Select
+                    value={ageGroup}
+                    onValueChange={(value) => setAgeGroup(value as AgeGroup)}
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='연령대를 선택하세요' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ageGroups.map((group) => (
+                        <SelectItem key={group} value={group}>
+                          {group}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className='grid gap-2'>

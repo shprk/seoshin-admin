@@ -25,13 +25,14 @@ import {
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type Customer } from '../data/schema'
+import { CustomerEditDialog } from './customer-edit-dialog'
 import { createCustomersColumns } from './customers-columns'
 
 type CustomersTableProps = {
   data: Customer[]
   search: Record<string, unknown>
   navigate: NavigateFn
-  onLetterArrivedUpdated?: () => void
+  onCustomerUpdated?: () => void
 }
 
 type PendingLetterChange = {
@@ -45,7 +46,7 @@ export function CustomersTable({
   data,
   search,
   navigate,
-  onLetterArrivedUpdated,
+  onCustomerUpdated,
 }: CustomersTableProps) {
   const [rows, setRows] = useState(data)
   const [sorting, setSorting] = useState<SortingState>([])
@@ -53,6 +54,7 @@ export function CustomersTable({
   const [pendingChange, setPendingChange] =
     useState<PendingLetterChange | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
 
   useEffect(() => {
     setRows(data)
@@ -72,6 +74,7 @@ export function CustomersTable({
             letterArrived,
           })
         },
+        onEdit: (customer) => setEditingCustomer(customer),
       }),
     [rows]
   )
@@ -129,7 +132,7 @@ export function CustomersTable({
         current.map((row) => (row.id === updated.id ? updated : row))
       )
       setPendingChange(null)
-      onLetterArrivedUpdated?.()
+      onCustomerUpdated?.()
       toast.success('편지 도착 여부를 변경했습니다.')
     } catch (error) {
       toast.error(
@@ -216,6 +219,20 @@ export function CustomersTable({
         isLoading={isUpdating}
         handleConfirm={() => {
           void handleConfirmLetterChange()
+        }}
+      />
+
+      <CustomerEditDialog
+        customer={editingCustomer}
+        open={!!editingCustomer}
+        onOpenChange={(open) => {
+          if (!open) setEditingCustomer(null)
+        }}
+        onUpdated={(updated) => {
+          setRows((current) =>
+            current.map((row) => (row.id === updated.id ? updated : row))
+          )
+          onCustomerUpdated?.()
         }}
       />
     </div>

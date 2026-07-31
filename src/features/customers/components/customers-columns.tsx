@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { type ColumnDef } from '@tanstack/react-table'
+import { type AgeGroup } from '@/lib/age-groups'
 import {
   letterFieldLabels,
   letterFields,
@@ -8,6 +9,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type Customer } from '../data/schema'
+import { CustomersRowActions } from './customers-row-actions'
 
 type CreateCustomersColumnsOptions = {
   onLetterArrivedChange: (
@@ -15,10 +17,12 @@ type CreateCustomersColumnsOptions = {
     field: LetterField,
     letterArrived: boolean
   ) => void
+  onEdit: (customer: Customer) => void
 }
 
 export function createCustomersColumns({
   onLetterArrivedChange,
+  onEdit,
 }: CreateCustomersColumnsOptions): ColumnDef<Customer>[] {
   return [
     {
@@ -45,6 +49,16 @@ export function createCustomersColumns({
       cell: ({ row }) => {
         const value = row.getValue('matchedParticipantNo') as string | null
         return <div>{value ?? '-'}</div>
+      },
+    },
+    {
+      accessorKey: 'ageGroup',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='연령' />
+      ),
+      cell: ({ row }) => {
+        const value = row.getValue('ageGroup') as AgeGroup | null
+        return <div className='whitespace-nowrap'>{value ?? '-'}</div>
       },
     },
     {
@@ -115,6 +129,12 @@ export function createCustomersColumns({
           </div>
         )
       },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <CustomersRowActions onEdit={() => onEdit(row.original)} />
+      ),
     },
   ]
 }

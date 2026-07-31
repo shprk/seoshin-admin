@@ -7,7 +7,7 @@ export const letterFields = [
 export type LetterField = (typeof letterFields)[number]
 
 export const letterFieldLabels: Record<LetterField, string> = {
-  letter1Arrived: '1번째 편지',
-  letter2Arrived: '2번째 편지',
-  letter3Arrived: '3번째 편지',
+  letter1Arrived: '첫 번째 편지',
+  letter2Arrived: '두 번째 편지',
+  letter3Arrived: '세 번째 편지',
 }
