@@ -23,3 +23,19 @@ export function getApiErrorMessage(error: unknown, fallback: string) {
 export function throwApiError(error: unknown, fallback: string): never {
   throw new Error(getApiErrorMessage(error, fallback), { cause: error })
 }
+
+/**
+ * HTTP status behind an error, unwrapping the plain `Error` that
+ * `throwApiError` wraps the original `AxiosError` in.
+ */
+export function getErrorStatus(error: unknown): number | undefined {
+  if (error instanceof AxiosError) {
+    return error.response?.status
+  }
+
+  if (error instanceof Error && error.cause instanceof AxiosError) {
+    return error.cause.response?.status
+  }
+
+  return undefined
+}

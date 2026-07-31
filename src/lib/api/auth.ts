@@ -36,3 +36,8 @@ export async function login(
     throw error
   }
 }
+
+export async function getMe(): Promise<AuthUser> {
+  const { data } = await apiClient.get<AuthUser>('/auth/me')
+  return data
+}

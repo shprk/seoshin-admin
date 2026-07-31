@@ -1,9 +1,16 @@
 import { clearCookies } from '@/test-utils/cookies'
+import { createAccessToken } from '@/test-utils/jwt'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// A query string forces a fresh module instance, so the store re-runs its
+// cookie-based initialisation the way a page reload would.
+let reload = 0
+
 async function importAuthStore() {
-  const { useAuthStore } = await import('./auth-store')
-  return useAuthStore
+  const mod = (await import(
+    /* @vite-ignore */ `./auth-store.ts?reload=${reload++}`
+  )) as typeof import('./auth-store')
+  return mod.useAuthStore
 }
 
 const sampleUser = {
@@ -27,20 +34,49 @@ describe('useAuthStore', () => {
   })
 
   it('persists access token so a new store instance reads it back', async () => {
+    const token = createAccessToken({ expiresInSeconds: 3600 })
     const useAuthStore = await importAuthStore()
-    useAuthStore.getState().auth.setAccessToken('session-token')
+    useAuthStore.getState().auth.setAccessToken(token)
 
     vi.resetModules()
     const useAuthStoreAfterReload = await importAuthStore()
 
-    expect(useAuthStoreAfterReload.getState().auth.accessToken).toBe(
-      'session-token'
+    expect(useAuthStoreAfterReload.getState().auth.accessToken).toBe(token)
+  })
+
+  it('drops a persisted token that has already expired', async () => {
+    const useAuthStore = await importAuthStore()
+    useAuthStore
+      .getState()
+      .auth.setAccessToken(createAccessToken({ expiresInSeconds: 3600 }))
+
+    // Re-persist with a past expiry, bypassing the store so the cookie survives.
+    const { setCookie } = await import('@/lib/cookies')
+    setCookie(
+      'thisisjustarandomstring',
+      JSON.stringify(createAccessToken({ expiresInSeconds: -60 }))
     )
+
+    vi.resetModules()
+    const useAuthStoreAfterReload = await importAuthStore()
+
+    expect(useAuthStoreAfterReload.getState().auth.accessToken).toBe('')
+  })
+
+  it('drops a persisted value that is not a readable token', async () => {
+    const { setCookie } = await import('@/lib/cookies')
+    setCookie('thisisjustarandomstring', JSON.stringify('not-a-jwt'))
+
+    const useAuthStore = await importAuthStore()
+
+    expect(useAuthStore.getState().auth.accessToken).toBe('')
   })
 
   it('clears persisted access token when resetAccessToken is used', async () => {
     const useAuthStore = await importAuthStore()
-    useAuthStore.getState().auth.setAccessToken('to-clear')
+    useAuthStore
+      .getState()
+      .auth.setAccessToken(createAccessToken({ expiresInSeconds: 3600 }))
     useAuthStore.getState().auth.resetAccessToken()
 
     vi.resetModules()
@@ -59,7 +95,9 @@ describe('useAuthStore', () => {
 
   it('reset clears user and access token and drops persistence', async () => {
     const useAuthStore = await importAuthStore()
-    useAuthStore.getState().auth.setAccessToken('will-be-cleared')
+    useAuthStore
+      .getState()
+      .auth.setAccessToken(createAccessToken({ expiresInSeconds: 3600 }))
     useAuthStore.getState().auth.setUser({ ...sampleUser })
 
     useAuthStore.getState().auth.reset()
