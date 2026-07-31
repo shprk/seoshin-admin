@@ -1,20 +1,22 @@
-import { useAuthStore } from '@/stores/auth-store'
+// import { useAuthStore } from '@/stores/auth-store'
 import { useLayout } from '@/context/layout-provider'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
 // import { AppTitle } from './app-title'
 import { sidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
-import { NavUser } from './nav-user'
+// import { NavUser } from './nav-user'
 import { TeamSwitcher } from './team-switcher'
 
 export function AppSidebar() {
   const { collapsible, variant } = useLayout()
+
+  /* 사이드바 하단 계정 메뉴(NavUser)와 함께 비활성화함. 복원 시 아래 import도 되살릴 것.
   const authUser = useAuthStore((state) => state.auth.user)
 
   const email = authUser?.email ?? sidebarData.user.email
@@ -24,6 +26,7 @@ export function AppSidebar() {
     email,
     avatar: sidebarData.user.avatar,
   }
+  */
 
   return (
     <Sidebar collapsible={collapsible} variant={variant}>
@@ -39,9 +42,9 @@ export function AppSidebar() {
           <NavGroup key={props.title} {...props} />
         ))}
       </SidebarContent>
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <NavUser user={user} />
-      </SidebarFooter>
+      </SidebarFooter> */}
       <SidebarRail />
     </Sidebar>
   )

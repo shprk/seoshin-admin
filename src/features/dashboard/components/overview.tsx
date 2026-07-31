@@ -1,5 +1,6 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 
+/* 기존 템플릿 mock 데이터 (실데이터 연동으로 비활성화)
 const data = [
   {
     name: '1월',
@@ -50,8 +51,13 @@ const data = [
     total: Math.floor(Math.random() * 5000) + 1000,
   },
 ]
+*/
 
-export function Overview() {
+type OverviewProps = {
+  data: { name: string; total: number }[]
+}
+
+export function Overview({ data }: OverviewProps) {
   return (
     <ResponsiveContainer width='100%' height={350}>
       <BarChart data={data}>
@@ -68,7 +74,8 @@ export function Overview() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          allowDecimals={false}
+          tickFormatter={(value) => `${value}명`}
         />
         <Bar
           dataKey='total'

@@ -1,13 +1,13 @@
 import {
   LayoutDashboard,
-  Monitor,
+  // Monitor,
   ListTodo,
   HelpCircle,
-  Bell,
-  Palette,
-  Settings,
-  Wrench,
-  UserCog,
+  // Bell,
+  // Palette,
+  // Settings,
+  // Wrench,
+  // UserCog,
   ContactRound,
   AudioWaveform,
   GalleryVerticalEnd,
@@ -169,37 +169,39 @@ export const sidebarData: SidebarData = {
     {
       title: '기타',
       items: [
-        {
-          title: '설정',
-          icon: Settings,
-          items: [
-            {
-              title: '프로필',
-              url: '/settings',
-              icon: UserCog,
-            },
-            {
-              title: '계정',
-              url: '/settings/account',
-              icon: Wrench,
-            },
-            {
-              title: '화면',
-              url: '/settings/appearance',
-              icon: Palette,
-            },
-            {
-              title: '알림',
-              url: '/settings/notifications',
-              icon: Bell,
-            },
-            {
-              title: '디스플레이',
-              url: '/settings/display',
-              icon: Monitor,
-            },
-          ],
-        },
+        // 복원 시 icon import 추가: Settings, UserCog, Wrench, Palette, Bell, Monitor
+        // 복원 시 search-provider.test.tsx의 중첩 메뉴 테스트도 함께 되살릴 것
+        // {
+        //   title: '설정',
+        //   icon: Settings,
+        //   items: [
+        //     {
+        //       title: '프로필',
+        //       url: '/settings',
+        //       icon: UserCog,
+        //     },
+        //     {
+        //       title: '계정',
+        //       url: '/settings/account',
+        //       icon: Wrench,
+        //     },
+        //     {
+        //       title: '화면',
+        //       url: '/settings/appearance',
+        //       icon: Palette,
+        //     },
+        //     {
+        //       title: '알림',
+        //       url: '/settings/notifications',
+        //       icon: Bell,
+        //     },
+        //     {
+        //       title: '디스플레이',
+        //       url: '/settings/display',
+        //       icon: Monitor,
+        //     },
+        //   ],
+        // },
         {
           title: '도움말 센터',
           url: '/help-center',

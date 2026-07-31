@@ -117,19 +117,21 @@ describe('SearchProvider and CommandMenu', () => {
       .not.toBeInTheDocument()
   })
 
-  it('navigates for nested sidebar items (group with sub-items)', async () => {
-    const screen = await renderWithSearchProvider()
-    const { getByPlaceholder, getByRole } = screen
-
-    await openCommandPalette(screen)
-
-    await userEvent.click(getByRole('option', { name: '설정 계정' }))
-
-    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/settings/account' })
-    await expect
-      .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
-  })
+  // 사이드바에서 '설정' 메뉴를 주석 처리하면서 중첩 항목이 없어져 함께 비활성화함.
+  // sidebar-data.ts의 '설정' 항목을 되살릴 때 이 테스트도 함께 복원할 것.
+  // it('navigates for nested sidebar items (group with sub-items)', async () => {
+  //   const screen = await renderWithSearchProvider()
+  //   const { getByPlaceholder, getByRole } = screen
+  //
+  //   await openCommandPalette(screen)
+  //
+  //   await userEvent.click(getByRole('option', { name: '설정 계정' }))
+  //
+  //   expect(mocks.navigate).toHaveBeenCalledWith({ to: '/settings/account' })
+  //   await expect
+  //     .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
+  //     .not.toBeInTheDocument()
+  // })
 
   it('applies theme and closes the palette when a theme command is chosen', async () => {
     const screen = await renderWithSearchProvider()
