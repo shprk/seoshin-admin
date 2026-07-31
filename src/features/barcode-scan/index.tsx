@@ -150,7 +150,7 @@ export function BarcodeScan() {
           </div>
         </div>
 
-        <Card>
+        <Card className='w-full max-w-md'>
           <CardHeader>
             <CardTitle>
               {lookupState === 'idle'
