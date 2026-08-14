@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { ageGroups } from '@/lib/age-groups'
+import { optionalEmailSchema } from '@/lib/email-domains'
 import { updateCustomer } from '@/lib/api/customers'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,12 +28,14 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { type Customer } from '../data/schema'
+import { CustomerEmailInput } from './customer-email-input'
 
 const formSchema = z.object({
   name: z.string().min(1, '이름을 입력해주세요.'),
   ageGroup: z.enum(ageGroups, { error: '연령을 선택해주세요.' }),
   matchedParticipantNo: z.string(),
   address: z.string(),
+  email: optionalEmailSchema,
   memo: z.string(),
 })
 
@@ -63,6 +66,7 @@ export function CustomerEditDialog({
       ageGroup: customer.ageGroup ?? undefined,
       matchedParticipantNo: customer.matchedParticipantNo ?? '',
       address: customer.address,
+      email: customer.email,
       memo: customer.memo,
     })
   }, [customer, form])
@@ -77,6 +81,7 @@ export function CustomerEditDialog({
         ageGroup: values.ageGroup,
         matchedParticipantNo: values.matchedParticipantNo.trim() || null,
         address: values.address.trim(),
+        email: values.email.trim(),
         memo: values.memo.trim(),
       })
       onUpdated(updated)
@@ -183,6 +188,23 @@ export function CustomerEditDialog({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem className='grid gap-2 space-y-0'>
+                  <FormLabel>이메일</FormLabel>
+                  <CustomerEmailInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    inputRef={field.ref}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

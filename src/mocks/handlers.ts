@@ -78,6 +78,7 @@ export const handlers = [
       matchedParticipantNo: payload.matchedParticipantNo ?? null,
       ageGroup: payload.ageGroup ?? null,
       address: payload.address ?? '',
+      email: payload.email ?? '',
       letter1Arrived: payload.letter1Arrived ?? false,
       letter2Arrived: payload.letter2Arrived ?? false,
       letter3Arrived: payload.letter3Arrived ?? false,

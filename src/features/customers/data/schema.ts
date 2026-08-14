@@ -8,6 +8,7 @@ const _customerSchema = z.object({
   matchedParticipantNo: z.string().nullable(),
   ageGroup: z.enum(ageGroups).nullable(),
   address: z.string(),
+  email: z.string(),
   letter1Arrived: z.boolean(),
   letter2Arrived: z.boolean(),
   letter3Arrived: z.boolean(),

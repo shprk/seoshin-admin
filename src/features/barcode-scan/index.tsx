@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { ageGroups, type AgeGroup } from '@/lib/age-groups'
+import { isOptionalEmailValid } from '@/lib/email-domains'
 import { getCustomerByParticipantNo, createCustomer } from '@/lib/api/customers'
 import { createTask } from '@/lib/api/tasks'
 import { Button } from '@/components/ui/button'
@@ -21,6 +22,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import type { Customer } from '@/features/customers/data/schema'
+import { CustomerEmailInput } from '@/features/customers/components/customer-email-input'
 import { BarcodeScanner } from './components/barcode-scanner'
 
 type LookupState = 'idle' | 'loading' | 'found' | 'not-found' | 'error'
@@ -44,6 +46,7 @@ export function BarcodeScan() {
   const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('')
   const [matchedParticipantNo, setMatchedParticipantNo] = useState('')
   const [address, setAddress] = useState('')
+  const [email, setEmail] = useState('')
   const [memo, setMemo] = useState('')
   const [creating, setCreating] = useState(false)
   const requestIdRef = useRef(0)
@@ -58,6 +61,7 @@ export function BarcodeScan() {
     setAgeGroup('')
     setMatchedParticipantNo('')
     setAddress('')
+    setEmail('')
     setMemo('')
   }
 
@@ -116,6 +120,12 @@ export function BarcodeScan() {
     if (!scannedCode) return
     if (!canCreate || !ageGroup) return
 
+    const trimmedEmail = email.trim()
+    if (!isOptionalEmailValid(trimmedEmail)) {
+      setError('올바른 이메일을 입력해주세요.')
+      return
+    }
+
     setCreating(true)
     setError(null)
 
@@ -126,6 +136,7 @@ export function BarcodeScan() {
         ageGroup,
         matchedParticipantNo: matchedParticipantNo.trim() || null,
         address: address.trim(),
+        email: trimmedEmail,
         memo: memo.trim(),
       })
       await createTaskFromCustomer(created)
@@ -213,6 +224,10 @@ export function BarcodeScan() {
                     {customer.address || '-'}
                   </div>
                   <div>
+                    <span className='font-medium'>이메일</span>{' '}
+                    {customer.email || '-'}
+                  </div>
+                  <div>
                     <span className='font-medium'>메모</span>{' '}
                     {customer.memo || '-'}
                   </div>
@@ -281,6 +296,11 @@ export function BarcodeScan() {
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder='선택 입력'
                   />
+                </div>
+
+                <div className='grid gap-2'>
+                  <Label>이메일</Label>
+                  <CustomerEmailInput value={email} onChange={setEmail} />
                 </div>
 
                 <div className='grid gap-2'>

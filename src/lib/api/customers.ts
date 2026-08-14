@@ -19,6 +19,7 @@ function mapCustomer(item: CustomerApiItem): Customer {
     matchedParticipantNo: item.matchedParticipantNo ?? null,
     ageGroup: item.ageGroup ?? null,
     address: item.address ?? '',
+    email: item.email ?? '',
     letter1Arrived: item.letter1Arrived ?? false,
     letter2Arrived: item.letter2Arrived ?? false,
     letter3Arrived: item.letter3Arrived ?? false,
@@ -60,6 +61,7 @@ export type CreateCustomerPayload = {
   ageGroup: AgeGroup
   matchedParticipantNo?: string | null
   address?: string
+  email?: string
   memo?: string
 }
 
@@ -73,6 +75,7 @@ export async function createCustomer(
       ageGroup: payload.ageGroup,
       matchedParticipantNo: payload.matchedParticipantNo ?? null,
       address: payload.address ?? '',
+      email: payload.email ?? '',
       memo: payload.memo ?? '',
       letter1Arrived: false,
       letter2Arrived: false,
@@ -89,6 +92,7 @@ export type UpdateCustomerPayload = {
   ageGroup: AgeGroup
   matchedParticipantNo: string | null
   address: string
+  email: string
   memo: string
 }
 

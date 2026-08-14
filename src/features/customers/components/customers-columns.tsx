@@ -73,6 +73,17 @@ export function createCustomersColumns({
       enableSorting: false,
     },
     {
+      accessorKey: 'email',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='이메일' />
+      ),
+      cell: ({ row }) => {
+        const email = row.getValue('email') as string
+        return <div className='max-w-48 truncate'>{email || '-'}</div>
+      },
+      enableSorting: false,
+    },
+    {
       id: 'letterArrived',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='편지 도착 여부' />

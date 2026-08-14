@@ -36,6 +36,7 @@ type CustomerSeed = {
   ageGroup?: AgeGroup | null
   matchedParticipantNo?: string | null
   address?: string
+  email?: string
   letters?: number
   memo?: string
   createdAt: Date
@@ -51,6 +52,7 @@ function toCustomer(seed: CustomerSeed, index: number): Customer {
     matchedParticipantNo: seed.matchedParticipantNo ?? null,
     ageGroup: seed.ageGroup ?? null,
     address: seed.address ?? '',
+    email: seed.email ?? '',
     letter1Arrived: letters >= 1,
     letter2Arrived: letters >= 2,
     letter3Arrived: letters >= 3,
@@ -66,6 +68,7 @@ const customerSeeds: CustomerSeed[] = [
     ageGroup: '30대',
     matchedParticipantNo: 'P-1002',
     address: '서울특별시 마포구 월드컵북로 120',
+    email: 'seoyeon@naver.com',
     letters: 3,
     createdAt: monthsAgo(11, 5),
   },
@@ -75,6 +78,7 @@ const customerSeeds: CustomerSeed[] = [
     ageGroup: '40대',
     matchedParticipantNo: 'P-1001',
     address: '경기도 성남시 분당구 판교로 235',
+    email: 'jihoon.park@gmail.com',
     letters: 3,
     createdAt: monthsAgo(11, 6),
   },
@@ -84,6 +88,7 @@ const customerSeeds: CustomerSeed[] = [
     ageGroup: '20대',
     matchedParticipantNo: 'P-1004',
     address: '부산광역시 해운대구 센텀중앙로 55',
+    email: 'haneul@daum.net',
     letters: 2,
     createdAt: monthsAgo(9, 12),
   },
