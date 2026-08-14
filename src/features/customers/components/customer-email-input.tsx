@@ -1,4 +1,4 @@
-import { useEffect, useState, type Ref } from 'react'
+import { useState, type Ref } from 'react'
 import {
   CUSTOM_EMAIL_DOMAIN,
   composeEmail,
@@ -28,6 +28,11 @@ type CustomerEmailInputProps = {
   autoComplete?: string
 }
 
+type DomainDraft = {
+  isCustom: boolean
+  domain: string
+}
+
 export function CustomerEmailInput({
   value,
   onChange,
@@ -40,40 +45,34 @@ export function CustomerEmailInput({
   autoComplete = 'off',
 }: CustomerEmailInputProps) {
   const { local, domain } = parseEmailParts(value)
-  const valueUsesCustomDomain = Boolean(domain) && !isPresetEmailDomain(domain)
 
-  const [isCustom, setIsCustom] = useState(valueUsesCustomDomain)
-  const [pendingDomain, setPendingDomain] = useState(
-    valueUsesCustomDomain ? domain : ''
-  )
+  // Only used while the composed value has no domain yet (domain picked before local part).
+  const [domainDraft, setDomainDraft] = useState<DomainDraft>({
+    isCustom: false,
+    domain: '',
+  })
 
-  useEffect(() => {
-    const parts = parseEmailParts(value)
-    if (parts.domain && !isPresetEmailDomain(parts.domain)) {
-      setIsCustom(true)
-      setPendingDomain(parts.domain)
-      return
-    }
-    if (parts.domain && isPresetEmailDomain(parts.domain)) {
-      setIsCustom(false)
-      setPendingDomain(parts.domain)
-    }
-  }, [value])
+  const isCustom = domain ? !isPresetEmailDomain(domain) : domainDraft.isCustom
+
+  const customDomainValue = domain
+    ? isPresetEmailDomain(domain)
+      ? ''
+      : domain
+    : domainDraft.domain
+
+  const activeDomain = isCustom
+    ? customDomainValue
+    : domain && isPresetEmailDomain(domain)
+      ? domain
+      : domainDraft.domain
 
   const selectValue = isCustom
     ? CUSTOM_EMAIL_DOMAIN
     : domain && isPresetEmailDomain(domain)
       ? domain
-      : pendingDomain && isPresetEmailDomain(pendingDomain)
-        ? pendingDomain
+      : domainDraft.domain && isPresetEmailDomain(domainDraft.domain)
+        ? domainDraft.domain
         : undefined
-
-  const customDomainValue = valueUsesCustomDomain ? domain : pendingDomain
-  const activeDomain = isCustom
-    ? customDomainValue
-    : domain && isPresetEmailDomain(domain)
-      ? domain
-      : pendingDomain
 
   const emit = (nextLocal: string, nextDomain: string) => {
     onChange(composeEmail(nextLocal, nextDomain))
@@ -85,11 +84,9 @@ export function CustomerEmailInput({
       const nextLocal = raw.slice(0, at)
       const nextDomain = raw.slice(at + 1)
       if (nextDomain && !isPresetEmailDomain(nextDomain)) {
-        setIsCustom(true)
-        setPendingDomain(nextDomain)
+        setDomainDraft({ isCustom: true, domain: nextDomain })
       } else if (nextDomain) {
-        setIsCustom(false)
-        setPendingDomain(nextDomain)
+        setDomainDraft({ isCustom: false, domain: nextDomain })
       }
       emit(nextLocal, nextDomain || activeDomain)
       return
@@ -100,18 +97,16 @@ export function CustomerEmailInput({
 
   const handleDomainSelect = (next: string) => {
     if (next === CUSTOM_EMAIL_DOMAIN) {
-      setIsCustom(true)
-      setPendingDomain('')
+      setDomainDraft({ isCustom: true, domain: '' })
       emit(local, '')
       return
     }
-    setIsCustom(false)
-    setPendingDomain(next)
+    setDomainDraft({ isCustom: false, domain: next })
     emit(local, next)
   }
 
   const handleCustomDomainChange = (nextDomain: string) => {
-    setPendingDomain(nextDomain)
+    setDomainDraft({ isCustom: true, domain: nextDomain })
     emit(local, nextDomain)
   }
 
