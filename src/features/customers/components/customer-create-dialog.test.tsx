@@ -1,8 +1,8 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import { toast } from 'sonner'
 import { type Customer } from '../data/schema'
 import { CustomerCreateDialog } from './customer-create-dialog'
 

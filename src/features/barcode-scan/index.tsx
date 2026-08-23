@@ -292,10 +292,7 @@ export function BarcodeScan() {
 
                 <div className='grid gap-2'>
                   <Label>주소</Label>
-                  <CustomerAddressInput
-                    value={address}
-                    onChange={setAddress}
-                  />
+                  <CustomerAddressInput value={address} onChange={setAddress} />
                 </div>
 
                 <div className='grid gap-2'>
