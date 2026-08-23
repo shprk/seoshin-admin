@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { ageGroups } from '@/lib/age-groups'
-import { updateCustomer } from '@/lib/api/customers'
+import { createCustomer } from '@/lib/api/customers'
 import { optionalEmailSchema } from '@/lib/email-domains'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,15 +24,25 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { type Customer } from '../data/schema'
 import { CustomerAddressInput } from './customer-address-input'
 import { CustomerEmailInput } from './customer-email-input'
 
+const emptyValues = {
+  participantNo: '',
+  name: '',
+  ageGroup: undefined,
+  matchedParticipantNo: '',
+  address: '',
+  email: '',
+  memo: '',
+}
+
 const formSchema = z.object({
-  name: z.string().min(1, '이름을 입력해주세요.'),
+  participantNo: z.string().trim().min(1, '참가번호를 입력해주세요.'),
+  name: z.string().trim().min(1, '이름을 입력해주세요.'),
   ageGroup: z.enum(ageGroups, { error: '연령을 선택해주세요.' }),
   matchedParticipantNo: z.string(),
   address: z.string(),
@@ -40,59 +50,48 @@ const formSchema = z.object({
   memo: z.string(),
 })
 
-type CustomerEditForm = z.infer<typeof formSchema>
+type CustomerCreateForm = z.infer<typeof formSchema>
 
-type CustomerEditDialogProps = {
-  customer: Customer | null
+type CustomerCreateDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onUpdated: (customer: Customer) => void
+  onCreated: (customer: Customer) => void
 }
 
-export function CustomerEditDialog({
-  customer,
+export function CustomerCreateDialog({
   open,
   onOpenChange,
-  onUpdated,
-}: CustomerEditDialogProps) {
+  onCreated,
+}: CustomerCreateDialogProps) {
   const [isSaving, setIsSaving] = useState(false)
-  const form = useForm<CustomerEditForm>({
+  const form = useForm<CustomerCreateForm>({
     resolver: zodResolver(formSchema),
+    defaultValues: emptyValues,
   })
 
-  useEffect(() => {
-    if (!customer) return
-    form.reset({
-      name: customer.name,
-      ageGroup: customer.ageGroup ?? undefined,
-      matchedParticipantNo: customer.matchedParticipantNo ?? '',
-      address: customer.address,
-      email: customer.email,
-      memo: customer.memo,
-    })
-  }, [customer, form])
+  const close = () => {
+    form.reset(emptyValues)
+    onOpenChange(false)
+  }
 
-  const onSubmit = async (values: CustomerEditForm) => {
-    if (!customer) return
-
+  const onSubmit = async (values: CustomerCreateForm) => {
     setIsSaving(true)
     try {
-      const updated = await updateCustomer(customer.id, {
-        name: values.name.trim(),
+      const created = await createCustomer({
+        participantNo: values.participantNo,
+        name: values.name,
         ageGroup: values.ageGroup,
         matchedParticipantNo: values.matchedParticipantNo.trim() || null,
         address: values.address.trim(),
         email: values.email.trim(),
         memo: values.memo.trim(),
       })
-      onUpdated(updated)
-      onOpenChange(false)
-      toast.success('고객 정보를 수정했습니다.')
+      onCreated(created)
+      close()
+      toast.success('고객을 등록했습니다.')
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : '고객 정보를 수정하지 못했습니다.'
+        error instanceof Error ? error.message : '고객을 등록하지 못했습니다.'
       )
     } finally {
       setIsSaving(false)
@@ -104,28 +103,40 @@ export function CustomerEditDialog({
       open={open}
       onOpenChange={(state) => {
         if (isSaving) return
-        onOpenChange(state)
+        if (state) {
+          onOpenChange(true)
+          return
+        }
+        close()
       }}
     >
       <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-lg'>
         <DialogHeader className='text-start'>
-          <DialogTitle>고객 정보 수정</DialogTitle>
+          <DialogTitle>고객 등록</DialogTitle>
           <DialogDescription>
-            변경할 내용을 입력한 뒤 저장을 누르세요.
+            참가번호를 직접 입력해 고객을 등록합니다.
           </DialogDescription>
         </DialogHeader>
 
-        <div className='grid gap-2'>
-          <Label>참가번호</Label>
-          <Input value={customer?.participantNo ?? ''} disabled />
-        </div>
-
         <Form {...form}>
           <form
-            id='customer-edit-form'
+            id='customer-create-form'
             onSubmit={form.handleSubmit(onSubmit)}
             className='space-y-4 px-0.5'
           >
+            <FormField
+              control={form.control}
+              name='participantNo'
+              render={({ field }) => (
+                <FormItem className='grid gap-2 space-y-0'>
+                  <FormLabel>참가번호</FormLabel>
+                  <FormControl>
+                    <Input autoComplete='off' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='name'
@@ -146,7 +157,7 @@ export function CustomerEditDialog({
                 <FormItem className='grid gap-2 space-y-0'>
                   <FormLabel>연령</FormLabel>
                   <SelectDropdown
-                    defaultValue={field.value}
+                    defaultValue={field.value ?? ''}
                     onValueChange={field.onChange}
                     placeholder='연령대를 선택하세요'
                     isControlled
@@ -234,13 +245,13 @@ export function CustomerEditDialog({
           <Button
             type='button'
             variant='outline'
-            onClick={() => onOpenChange(false)}
+            onClick={close}
             disabled={isSaving}
           >
             취소
           </Button>
-          <Button type='submit' form='customer-edit-form' disabled={isSaving}>
-            {isSaving ? '저장 중...' : '저장'}
+          <Button type='submit' form='customer-create-form' disabled={isSaving}>
+            {isSaving ? '등록 중...' : '등록'}
           </Button>
         </DialogFooter>
       </DialogContent>

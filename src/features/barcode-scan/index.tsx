@@ -21,6 +21,7 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { CustomerAddressInput } from '@/features/customers/components/customer-address-input'
 import { CustomerEmailInput } from '@/features/customers/components/customer-email-input'
 import type { Customer } from '@/features/customers/data/schema'
 import { BarcodeScanner } from './components/barcode-scanner'
@@ -291,10 +292,9 @@ export function BarcodeScan() {
 
                 <div className='grid gap-2'>
                   <Label>주소</Label>
-                  <Input
+                  <CustomerAddressInput
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder='선택 입력'
+                    onChange={setAddress}
                   />
                 </div>
 

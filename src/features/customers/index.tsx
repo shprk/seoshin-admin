@@ -1,12 +1,16 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi } from '@tanstack/react-router'
+import { UserPlus } from 'lucide-react'
 import { getCustomers } from '@/lib/api/customers'
+import { Button } from '@/components/ui/button'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { CustomerCreateDialog } from './components/customer-create-dialog'
 import { CustomersTable } from './components/customers-table'
 
 const route = getRouteApi('/_authenticated/customers/')
@@ -14,6 +18,7 @@ const route = getRouteApi('/_authenticated/customers/')
 export function Customers() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
+  const [createOpen, setCreateOpen] = useState(false)
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['customers'],
     queryFn: getCustomers,
@@ -36,6 +41,9 @@ export function Customers() {
               등록된 고객을 조회하고 관리합니다.
             </p>
           </div>
+          <Button className='space-x-1' onClick={() => setCreateOpen(true)}>
+            <span>고객 등록</span> <UserPlus size={18} />
+          </Button>
         </div>
 
         {isLoading ? (
@@ -57,6 +65,14 @@ export function Customers() {
           />
         )}
       </Main>
+
+      <CustomerCreateDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onCreated={() => {
+          void refetch()
+        }}
+      />
     </>
   )
 }
