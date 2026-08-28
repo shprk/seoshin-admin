@@ -1,19 +1,24 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { SquarePen } from 'lucide-react'
+import { SquarePen, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
 type CustomersRowActionsProps = {
   onEdit: () => void
+  onDelete: () => void
 }
 
-export function CustomersRowActions({ onEdit }: CustomersRowActionsProps) {
+export function CustomersRowActions({
+  onEdit,
+  onDelete,
+}: CustomersRowActionsProps) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -30,6 +35,13 @@ export function CustomersRowActions({ onEdit }: CustomersRowActionsProps) {
           수정
           <DropdownMenuShortcut>
             <SquarePen size={16} />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={onDelete} className='text-red-500!'>
+          삭제
+          <DropdownMenuShortcut>
+            <Trash2 size={16} />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

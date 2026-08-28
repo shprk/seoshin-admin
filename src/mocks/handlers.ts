@@ -12,8 +12,24 @@ import { issueAccessToken, toAuthUser } from './token'
 const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '')
 const endpoint = (path: string) => `${baseUrl}${path}`
 
-const customers = createSeedCustomers()
+type StoredCustomer = Customer & { deletedAt: Date | null }
+
+const customers: StoredCustomer[] = createSeedCustomers().map((customer) => ({
+  ...customer,
+  deletedAt: null,
+}))
 const scans = createSeedScans()
+
+function toPublicCustomer({
+  deletedAt: _deletedAt,
+  ...customer
+}: StoredCustomer): Customer {
+  return customer
+}
+
+function activeCustomers() {
+  return customers.filter((customer) => customer.deletedAt == null)
+}
 
 function authenticate(request: Request): boolean {
   const header = request.headers.get('Authorization') ?? ''
@@ -54,7 +70,9 @@ export const handlers = [
   http.get(endpoint('/customers'), ({ request }) => {
     if (!authenticate(request)) return unauthorized()
 
-    return HttpResponse.json({ items: customers, total: customers.length })
+    const items = activeCustomers().map(toPublicCustomer)
+
+    return HttpResponse.json({ items, total: items.length })
   }),
 
   http.post(endpoint('/customers'), async ({ request }) => {
@@ -66,12 +84,14 @@ export const handlers = [
     }
 
     if (
-      customers.some((item) => item.participantNo === payload.participantNo)
+      activeCustomers().some(
+        (item) => item.participantNo === payload.participantNo
+      )
     ) {
       return errorResponse('이미 등록된 참가번호입니다.', 409)
     }
 
-    const created: Customer = {
+    const created: StoredCustomer = {
       id: crypto.randomUUID(),
       name: payload.name,
       participantNo: payload.participantNo,
@@ -84,31 +104,61 @@ export const handlers = [
       letter3Arrived: payload.letter3Arrived ?? false,
       memo: payload.memo ?? '',
       createdAt: new Date(),
+      deletedAt: null,
     }
 
     customers.unshift(created)
 
-    return HttpResponse.json(created, { status: 201 })
+    return HttpResponse.json(toPublicCustomer(created), { status: 201 })
   }),
 
   http.patch(endpoint('/customers/:id'), async ({ request, params }) => {
     if (!authenticate(request)) return unauthorized()
 
-    const index = customers.findIndex((item) => item.id === params.id)
+    const index = customers.findIndex(
+      (item) => item.id === params.id && item.deletedAt == null
+    )
     if (index === -1) return errorResponse('고객을 찾을 수 없습니다.', 404)
 
     const existing = customers[index]
     const payload = (await request.json()) as Partial<Customer>
-    const updated: Customer = {
+    const updated: StoredCustomer = {
       ...existing,
       ...payload,
       id: existing.id,
       createdAt: existing.createdAt,
+      deletedAt: existing.deletedAt,
     }
 
     customers[index] = updated
 
-    return HttpResponse.json(updated)
+    return HttpResponse.json(toPublicCustomer(updated))
+  }),
+
+  http.delete(endpoint('/customers'), async ({ request }) => {
+    if (!authenticate(request)) return unauthorized()
+
+    const payload = (await request.json()) as { ids?: unknown }
+    const ids = payload.ids
+
+    if (
+      !Array.isArray(ids) ||
+      ids.length === 0 ||
+      ids.some((id) => typeof id !== 'string')
+    ) {
+      return errorResponse('삭제할 고객을 선택해주세요.', 400)
+    }
+
+    const now = new Date()
+
+    for (const id of ids) {
+      const target = customers.find((item) => item.id === id)
+      if (target && target.deletedAt == null) {
+        target.deletedAt = now
+      }
+    }
+
+    return new HttpResponse(null, { status: 204 })
   }),
 
   http.get(endpoint('/tasks'), ({ request }) => {

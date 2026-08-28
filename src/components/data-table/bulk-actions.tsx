@@ -15,6 +15,13 @@ type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
   entityName: string
   children: React.ReactNode
+  renderSelectedLabel?: (
+    selectedCount: number,
+    badge: React.ReactNode
+  ) => React.ReactNode
+  selectedAnnouncement?: (selectedCount: number) => string
+  toolbarAriaLabel?: (selectedCount: number) => string
+  badgeAriaLabel?: (selectedCount: number) => string
 }
 
 /**
@@ -31,6 +38,10 @@ export function DataTableBulkActions<TData>({
   table,
   entityName,
   children,
+  renderSelectedLabel,
+  selectedAnnouncement,
+  toolbarAriaLabel,
+  badgeAriaLabel,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedCount = selectedRows.length
@@ -40,7 +51,9 @@ export function DataTableBulkActions<TData>({
   // Announce selection changes to screen readers
   useEffect(() => {
     if (selectedCount > 0) {
-      const message = `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`
+      const message = selectedAnnouncement
+        ? selectedAnnouncement(selectedCount)
+        : `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`
 
       // Use queueMicrotask to defer state update and avoid cascading renders
       queueMicrotask(() => {
@@ -51,7 +64,7 @@ export function DataTableBulkActions<TData>({
       const timer = setTimeout(() => setAnnouncement(''), 3000)
       return () => clearTimeout(timer)
     }
-  }, [selectedCount, entityName])
+  }, [selectedCount, entityName, selectedAnnouncement])
 
   const handleClearSelection = () => {
     table.resetRowSelection()
@@ -123,6 +136,18 @@ export function DataTableBulkActions<TData>({
     return null
   }
 
+  const countBadge = (
+    <Badge
+      variant='default'
+      className='min-w-6 rounded-lg'
+      aria-label={
+        badgeAriaLabel?.(selectedCount) ?? `${selectedCount}개 선택됨`
+      }
+    >
+      {selectedCount}
+    </Badge>
+  )
+
   return (
     <>
       {/* Live region for screen reader announcements */}
@@ -138,7 +163,10 @@ export function DataTableBulkActions<TData>({
       <div
         ref={toolbarRef}
         role='toolbar'
-        aria-label={`선택한 ${selectedCount}개의 ${entityName}에 대한 일괄 작업`}
+        aria-label={
+          toolbarAriaLabel?.(selectedCount) ??
+          `선택한 ${selectedCount}개의 ${entityName}에 대한 일괄 작업`
+        }
         aria-describedby='bulk-actions-description'
         tabIndex={-1}
         onKeyDown={handleKeyDown}
@@ -185,14 +213,14 @@ export function DataTableBulkActions<TData>({
             className='flex items-center gap-x-1 text-sm'
             id='bulk-actions-description'
           >
-            <Badge
-              variant='default'
-              className='min-w-8 rounded-lg'
-              aria-label={`${selectedCount}개 선택됨`}
-            >
-              {selectedCount}
-            </Badge>{' '}
-            <span className='hidden sm:inline'>{entityName}</span> 선택됨
+            {renderSelectedLabel ? (
+              renderSelectedLabel(selectedCount, countBadge)
+            ) : (
+              <>
+                {countBadge}{' '}
+                <span className='hidden sm:inline'>{entityName}</span> 선택됨
+              </>
+            )}
           </div>
 
           <Separator

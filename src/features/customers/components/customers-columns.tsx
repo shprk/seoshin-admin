@@ -6,6 +6,7 @@ import {
   letterFields,
   type LetterField,
 } from '@/lib/letter-fields'
+import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type Customer } from '../data/schema'
@@ -18,13 +19,42 @@ type CreateCustomersColumnsOptions = {
     letterArrived: boolean
   ) => void
   onEdit: (customer: Customer) => void
+  onDelete: (customer: Customer) => void
 }
 
 export function createCustomersColumns({
   onLetterArrivedChange,
   onEdit,
+  onDelete,
 }: CreateCustomersColumnsOptions): ColumnDef<Customer>[] {
   return [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='전체 선택'
+          className='translate-y-0.5'
+        />
+      ),
+      meta: {
+        className: cn('inset-s-0 z-10 rounded-tl-[inherit] max-md:sticky'),
+      },
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='행 선택'
+          className='translate-y-0.5'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: 'name',
       header: ({ column }) => (
@@ -144,7 +174,10 @@ export function createCustomersColumns({
     {
       id: 'actions',
       cell: ({ row }) => (
-        <CustomersRowActions onEdit={() => onEdit(row.original)} />
+        <CustomersRowActions
+          onEdit={() => onEdit(row.original)}
+          onDelete={() => onDelete(row.original)}
+        />
       ),
     },
   ]

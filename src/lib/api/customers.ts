@@ -128,3 +128,13 @@ export async function updateCustomerLetterArrived(
     throwApiError(error, '편지 도착 여부를 변경하지 못했습니다.')
   }
 }
+
+export async function deleteCustomers(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+
+  try {
+    await apiClient.delete('/customers', { data: { ids } })
+  } catch (error) {
+    throwApiError(error, '고객을 삭제하지 못했습니다.')
+  }
+}

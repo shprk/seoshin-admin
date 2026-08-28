@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  type RowSelectionState,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -10,7 +11,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { updateCustomerLetterArrived } from '@/lib/api/customers'
+import {
+  deleteCustomers,
+  updateCustomerLetterArrived,
+} from '@/lib/api/customers'
 import { letterFieldLabels, type LetterField } from '@/lib/letter-fields'
 import { cn } from '@/lib/utils'
 import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
@@ -26,7 +30,9 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { type Customer } from '../data/schema'
 import { CustomerEditDialog } from './customer-edit-dialog'
+import { CustomersBulkActions } from './customers-bulk-actions'
 import { createCustomersColumns } from './customers-columns'
+import { CustomersDeleteDialog } from './customers-delete-dialog'
 
 type CustomersTableProps = {
   data: Customer[]
@@ -42,6 +48,12 @@ type PendingLetterChange = {
   letterArrived: boolean
 }
 
+function deletedCustomersMessage(count: number) {
+  return count === 1
+    ? '고객을 삭제했습니다.'
+    : `${count}명의 고객을 삭제했습니다.`
+}
+
 export function CustomersTable({
   data,
   search,
@@ -50,10 +62,13 @@ export function CustomersTable({
 }: CustomersTableProps) {
   const [rows, setRows] = useState(data)
   const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pendingChange, setPendingChange] =
     useState<PendingLetterChange | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<Customer[] | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
 
   useEffect(() => {
@@ -75,6 +90,7 @@ export function CustomersTable({
           })
         },
         onEdit: (customer) => setEditingCustomer(customer),
+        onDelete: (customer) => setPendingDelete([customer]),
       }),
     [rows]
   )
@@ -100,11 +116,15 @@ export function CustomersTable({
     state: {
       sorting,
       pagination,
+      rowSelection,
       columnFilters,
       columnVisibility,
     },
+    enableRowSelection: true,
+    getRowId: (row) => row.id,
     onPaginationChange,
     onColumnFiltersChange,
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getPaginationRowModel: getPaginationRowModel(),
@@ -145,8 +165,34 @@ export function CustomersTable({
     }
   }
 
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete || pendingDelete.length === 0) return
+
+    const ids = pendingDelete.map((customer) => customer.id)
+    setIsDeleting(true)
+    try {
+      await deleteCustomers(ids)
+      setRows((current) => current.filter((row) => !ids.includes(row.id)))
+      table.resetRowSelection()
+      setPendingDelete(null)
+      onCustomerUpdated?.()
+      toast.success(deletedCustomersMessage(ids.length))
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : '고객을 삭제하지 못했습니다.'
+      )
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return (
-    <div className={cn('flex flex-1 flex-col gap-4')}>
+    <div
+      className={cn(
+        'max-sm:has-[div[role="toolbar"]]:mb-16',
+        'flex flex-1 flex-col gap-4'
+      )}
+    >
       <DataTableToolbar
         table={table}
         searchPlaceholder='이름으로 검색...'
@@ -156,9 +202,17 @@ export function CustomersTable({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className='group/row'>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={cn(
+                      'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
+                      header.column.columnDef.meta?.className,
+                      header.column.columnDef.meta?.thClassName
+                    )}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -173,9 +227,20 @@ export function CustomersTable({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className='group/row'
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
+                        cell.column.columnDef.meta?.className,
+                        cell.column.columnDef.meta?.tdClassName
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -198,6 +263,10 @@ export function CustomersTable({
         </Table>
       </div>
       <DataTablePagination table={table} className='mt-auto' />
+      <CustomersBulkActions
+        table={table}
+        onDelete={(customers) => setPendingDelete(customers)}
+      />
 
       <ConfirmDialog
         open={!!pendingChange}
@@ -219,6 +288,18 @@ export function CustomersTable({
         isLoading={isUpdating}
         handleConfirm={() => {
           void handleConfirmLetterChange()
+        }}
+      />
+
+      <CustomersDeleteDialog
+        customers={pendingDelete ?? []}
+        open={!!pendingDelete}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null)
+        }}
+        isLoading={isDeleting}
+        onConfirm={() => {
+          void handleConfirmDelete()
         }}
       />
 

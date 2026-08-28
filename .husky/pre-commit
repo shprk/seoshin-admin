@@ -1,4 +1,1 @@
-set -e
-pnpm format
-pnpm lint
-git add .
+pnpm lint-staged
