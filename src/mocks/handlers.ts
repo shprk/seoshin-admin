@@ -189,6 +189,28 @@ export const handlers = [
     return HttpResponse.json(created, { status: 201 })
   }),
 
+  http.delete(endpoint('/tasks'), async ({ request }) => {
+    if (!authenticate(request)) return unauthorized()
+
+    const payload = (await request.json()) as { ids?: unknown }
+    const ids = payload.ids
+
+    if (
+      !Array.isArray(ids) ||
+      ids.length === 0 ||
+      ids.some((id) => typeof id !== 'string')
+    ) {
+      return errorResponse('삭제할 스캔 기록을 선택해주세요.', 400)
+    }
+
+    for (const id of ids) {
+      const index = scans.findIndex((item) => item.id === id)
+      if (index !== -1) scans.splice(index, 1)
+    }
+
+    return new HttpResponse(null, { status: 204 })
+  }),
+
   http.delete(endpoint('/tasks/:id'), ({ request, params }) => {
     if (!authenticate(request)) return unauthorized()
 

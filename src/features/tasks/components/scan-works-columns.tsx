@@ -1,18 +1,39 @@
 import { format } from 'date-fns'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Trash2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type ScanWork } from '../data/scan-work-schema'
 
-type CreateScanWorksColumnsOptions = {
-  onDelete: (row: ScanWork) => void
-}
-
-export function createScanWorksColumns({
-  onDelete,
-}: CreateScanWorksColumnsOptions): ColumnDef<ScanWork>[] {
+export function createScanWorksColumns(): ColumnDef<ScanWork>[] {
   return [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='전체 선택'
+          className='translate-y-0.5'
+        />
+      ),
+      meta: {
+        className: cn('inset-s-0 z-10 rounded-tl-[inherit] max-md:sticky'),
+      },
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='행 선택'
+          className='translate-y-0.5'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: 'name',
       header: ({ column }) => (
@@ -66,24 +87,6 @@ export function createScanWorksColumns({
           </div>
         )
       },
-    },
-    {
-      id: 'actions',
-      header: () => <span className='sr-only'>삭제</span>,
-      cell: ({ row }) => (
-        <Button
-          type='button'
-          variant='ghost'
-          size='icon'
-          className='text-destructive hover:text-destructive'
-          onClick={() => onDelete(row.original)}
-          aria-label={`${row.original.name} 작업 삭제`}
-        >
-          <Trash2 className='size-4' />
-        </Button>
-      ),
-      enableSorting: false,
-      enableHiding: false,
     },
   ]
 }

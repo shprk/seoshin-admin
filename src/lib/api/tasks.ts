@@ -54,10 +54,12 @@ export async function createTask(
   }
 }
 
-export async function deleteTask(id: string): Promise<void> {
+export async function deleteTasks(ids: string[]): Promise<void> {
+  if (ids.length === 0) return
+
   try {
-    await apiClient.delete(`/tasks/${id}`)
+    await apiClient.delete('/tasks', { data: { ids } })
   } catch (error) {
-    throwApiError(error, '작업을 삭제하지 못했습니다.')
+    throwApiError(error, '스캔 기록을 삭제하지 못했습니다.')
   }
 }
