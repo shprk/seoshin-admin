@@ -1,0 +1,4 @@
+set -e
+pnpm format
+pnpm lint
+git add .
