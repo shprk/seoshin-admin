@@ -65,9 +65,14 @@ export function createScanWorksColumns(): ColumnDef<ScanWork>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='주소' />
       ),
+      meta: { tdClassName: 'whitespace-normal' },
       cell: ({ row }) => {
         const address = row.getValue('address') as string
-        return <div className='max-w-56 truncate'>{address || '-'}</div>
+        return (
+          <div className='max-w-56 break-words whitespace-normal'>
+            {address || '-'}
+          </div>
+        )
       },
       enableSorting: false,
     },

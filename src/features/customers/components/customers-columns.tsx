@@ -96,9 +96,14 @@ export function createCustomersColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='주소' />
       ),
+      meta: { tdClassName: 'whitespace-normal' },
       cell: ({ row }) => {
         const address = row.getValue('address') as string
-        return <div className='max-w-56 truncate'>{address || '-'}</div>
+        return (
+          <div className='max-w-56 break-words whitespace-normal'>
+            {address || '-'}
+          </div>
+        )
       },
       enableSorting: false,
     },
@@ -148,9 +153,14 @@ export function createCustomersColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='메모' />
       ),
+      meta: { tdClassName: 'whitespace-normal' },
       cell: ({ row }) => {
         const memo = row.getValue('memo') as string
-        return <div className='max-w-48 truncate'>{memo || '-'}</div>
+        return (
+          <div className='max-w-48 break-words whitespace-pre-wrap'>
+            {memo || '-'}
+          </div>
+        )
       },
       enableSorting: false,
     },
