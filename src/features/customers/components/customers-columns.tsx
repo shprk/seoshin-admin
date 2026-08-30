@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { LongText } from '@/components/long-text'
 import { type Customer } from '../data/schema'
 import { CustomersRowActions } from './customers-row-actions'
 
@@ -96,13 +97,13 @@ export function createCustomersColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='주소' />
       ),
-      meta: { tdClassName: 'whitespace-normal' },
+      meta: { tdClassName: 'whitespace-normal max-md:whitespace-nowrap' },
       cell: ({ row }) => {
         const address = row.getValue('address') as string
         return (
-          <div className='max-w-56 break-words whitespace-normal'>
+          <LongText className='max-w-56' wrapFrom='md'>
             {address || '-'}
-          </div>
+          </LongText>
         )
       },
       enableSorting: false,
@@ -153,13 +154,17 @@ export function createCustomersColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='메모' />
       ),
-      meta: { tdClassName: 'whitespace-normal' },
+      meta: { tdClassName: 'whitespace-normal max-md:whitespace-nowrap' },
       cell: ({ row }) => {
         const memo = row.getValue('memo') as string
         return (
-          <div className='max-w-48 break-words whitespace-pre-wrap'>
+          <LongText
+            className='max-w-48'
+            wrapClassName='whitespace-pre-wrap'
+            wrapFrom='md'
+          >
             {memo || '-'}
-          </div>
+          </LongText>
         )
       },
       enableSorting: false,

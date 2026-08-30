@@ -16,12 +16,18 @@ type LongTextProps = {
   children: React.ReactNode
   className?: string
   contentClassName?: string
+  /** Extra classes for the wrapped (full-text) view at `wrapFrom` and up. */
+  wrapClassName?: string
+  /** From this breakpoint up, show full wrapped text instead of truncating. */
+  wrapFrom?: 'md'
 }
 
 export function LongText({
   children,
   className = '',
   contentClassName = '',
+  wrapClassName,
+  wrapFrom,
 }: LongTextProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isOverflown, setIsOverflown] = useState(false)
@@ -32,6 +38,60 @@ export function LongText({
     if (node && checkOverflow(node)) {
       queueMicrotask(() => setIsOverflown(true))
     }
+  }
+
+  if (wrapFrom === 'md') {
+    const wrapped = (
+      <div
+        className={cn(
+          'hidden break-words whitespace-normal md:block',
+          className,
+          wrapClassName
+        )}
+      >
+        {children}
+      </div>
+    )
+
+    if (!isOverflown) {
+      return (
+        <>
+          {wrapped}
+          <div
+            ref={refCallback}
+            className={cn('truncate md:hidden', className)}
+          >
+            {children}
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <>
+        {wrapped}
+        <div className='md:hidden'>
+          <Popover>
+            <PopoverTrigger asChild>
+              <div
+                ref={refCallback}
+                className={cn('cursor-pointer truncate', className)}
+              >
+                {children}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              className={cn(
+                'w-fit max-w-[min(90vw,24rem)] break-words whitespace-pre-wrap',
+                contentClassName
+              )}
+            >
+              <p>{children}</p>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </>
+    )
   }
 
   if (!isOverflown)

@@ -3,6 +3,7 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { LongText } from '@/components/long-text'
 import { type ScanWork } from '../data/scan-work-schema'
 
 export function createScanWorksColumns(): ColumnDef<ScanWork>[] {
@@ -65,13 +66,13 @@ export function createScanWorksColumns(): ColumnDef<ScanWork>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='주소' />
       ),
-      meta: { tdClassName: 'whitespace-normal' },
+      meta: { tdClassName: 'whitespace-normal max-md:whitespace-nowrap' },
       cell: ({ row }) => {
         const address = row.getValue('address') as string
         return (
-          <div className='max-w-56 break-words whitespace-normal'>
+          <LongText className='max-w-56' wrapFrom='md'>
             {address || '-'}
-          </div>
+          </LongText>
         )
       },
       enableSorting: false,
