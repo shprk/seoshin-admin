@@ -4,7 +4,9 @@ import { type Locator, userEvent } from 'vitest/browser'
 import { UserAuthForm } from './user-auth-form'
 
 const FORM_MESSAGES = {
-  emailEmpty: '이메일을 입력해주세요.',
+  loginIdEmpty: '아이디를 입력해주세요.',
+  loginIdShort: '아이디는 3자 이상이어야 합니다.',
+  loginIdInvalid: '아이디는 영문과 숫자만 사용할 수 있습니다.',
   passwordEmpty: '비밀번호를 입력해주세요.',
   passwordShort: '비밀번호는 최소 7자 이상이어야 합니다.',
 } as const
@@ -38,7 +40,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 describe('UserAuthForm', () => {
   describe('Rendering without redirectTo', () => {
     let screen: RenderResult
-    let emailInput: Locator
+    let loginIdInput: Locator
     let passwordInput: Locator
     let signInButton: Locator
 
@@ -54,13 +56,13 @@ describe('UserAuthForm', () => {
         },
       })
       screen = await render(<UserAuthForm />)
-      emailInput = screen.getByRole('textbox', { name: /^이메일$/i })
+      loginIdInput = screen.getByRole('textbox', { name: /^아이디$/i })
       passwordInput = screen.getByLabelText(/^비밀번호$/i)
       signInButton = screen.getByRole('button', { name: /^로그인$/i })
     })
 
     it('renders fields and submit button', async () => {
-      await expect.element(emailInput).toBeInTheDocument()
+      await expect.element(loginIdInput).toBeInTheDocument()
       await expect.element(passwordInput).toBeInTheDocument()
       await expect.element(signInButton).toBeInTheDocument()
     })
@@ -69,22 +71,44 @@ describe('UserAuthForm', () => {
       await userEvent.click(signInButton)
 
       await expect
-        .element(screen.getByText(FORM_MESSAGES.emailEmpty))
+        .element(screen.getByText(FORM_MESSAGES.loginIdEmpty))
         .toBeInTheDocument()
       await expect
         .element(screen.getByText(FORM_MESSAGES.passwordEmpty))
         .toBeInTheDocument()
     })
 
+    it('rejects a loginId that is too short', async () => {
+      await userEvent.fill(loginIdInput, 'ab')
+      await userEvent.fill(passwordInput, '1234567')
+      await userEvent.click(signInButton)
+
+      await expect
+        .element(screen.getByText(FORM_MESSAGES.loginIdShort))
+        .toBeInTheDocument()
+      expect(loginMock).not.toHaveBeenCalled()
+    })
+
+    it('rejects an email-shaped loginId', async () => {
+      await userEvent.fill(loginIdInput, 'admin@example.com')
+      await userEvent.fill(passwordInput, '1234567')
+      await userEvent.click(signInButton)
+
+      await expect
+        .element(screen.getByText(FORM_MESSAGES.loginIdInvalid))
+        .toBeInTheDocument()
+      expect(loginMock).not.toHaveBeenCalled()
+    })
+
     it('authenticates and navigates to default route on success', async () => {
-      await userEvent.fill(emailInput, 'a@b.com')
+      await userEvent.fill(loginIdInput, 'admin')
       await userEvent.fill(passwordInput, '1234567')
 
       await userEvent.click(signInButton)
 
       await vi.waitFor(() => expect(loginMock).toHaveBeenCalledOnce())
       expect(loginMock).toHaveBeenCalledWith({
-        email: 'a@b.com',
+        loginId: 'admin',
         password: '1234567',
       })
 
@@ -122,7 +146,7 @@ describe('UserAuthForm', () => {
       <UserAuthForm redirectTo='/settings' />
     )
 
-    await userEvent.fill(getByRole('textbox', { name: /이메일/i }), 'a@b.com')
+    await userEvent.fill(getByRole('textbox', { name: /아이디/i }), 'admin')
     await userEvent.fill(getByLabelText('비밀번호'), '1234567')
 
     await userEvent.click(getByRole('button', { name: /로그인/i }))

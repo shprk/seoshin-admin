@@ -46,16 +46,16 @@ const unauthorized = () => errorResponse('인증이 필요합니다.', 401)
 
 export const handlers = [
   http.post(endpoint('/auth/login'), async ({ request }) => {
-    const { email, password } = (await request.json()) as {
-      email?: string
+    const { loginId, password } = (await request.json()) as {
+      loginId?: string
       password?: string
     }
 
-    if (!email || !password) {
-      return errorResponse('이메일과 비밀번호를 모두 입력해주세요.', 400)
+    if (!loginId || !password) {
+      return errorResponse('아이디와 비밀번호를 모두 입력해주세요.', 400)
     }
 
-    return HttpResponse.json(issueAccessToken(email))
+    return HttpResponse.json(issueAccessToken(`${loginId}@mock.local`))
   }),
 
   http.get(endpoint('/auth/me'), ({ request }) => {

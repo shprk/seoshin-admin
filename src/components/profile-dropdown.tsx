@@ -37,9 +37,11 @@ export function ProfileDropdown() {
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
               <p className='text-sm leading-none font-medium'>{displayName}</p>
+              {/* 복원 시 아래 이메일 표시를 되살릴 것
               <p className='text-xs leading-none text-muted-foreground'>
                 {email || '—'}
               </p>
+              */}
             </div>
           </DropdownMenuLabel>
           {/* 복원 시 Link, DropdownMenuGroup import도 함께 되살릴 것 */}

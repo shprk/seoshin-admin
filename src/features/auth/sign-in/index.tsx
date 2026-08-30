@@ -22,7 +22,7 @@ export function SignIn() {
             관리자 로그인
           </CardTitle>
           <CardDescription>
-            관리자 계정 이메일과 비밀번호를 입력해주세요.
+            관리자 아이디와 비밀번호를 입력해주세요.
             {/* 복원 시 주석 해제
             {' '}
             계정이 없으신가요?{' '}

@@ -3,7 +3,7 @@ import { type AuthUser } from '@/stores/auth-store'
 import { apiClient } from './client'
 
 export type LoginCredentials = {
-  email: string
+  loginId: string
   password: string
 }
 

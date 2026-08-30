@@ -22,9 +22,12 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? '이메일을 입력해주세요.' : undefined),
-  }),
+  loginId: z
+    .string()
+    .min(1, '아이디를 입력해주세요.')
+    .min(3, '아이디는 3자 이상이어야 합니다.')
+    .max(32, '아이디는 32자 이하여야 합니다.')
+    .regex(/^[a-zA-Z0-9]+$/, '아이디는 영문과 숫자만 사용할 수 있습니다.'),
   password: z
     .string()
     .min(1, '비밀번호를 입력해주세요.')
@@ -47,7 +50,7 @@ export function UserAuthForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      loginId: '',
       password: '',
     },
   })
@@ -66,7 +69,7 @@ export function UserAuthForm({
         const targetPath = redirectTo || '/'
         navigate({ to: targetPath, replace: true })
 
-        return `${response.user.email}님, 환영합니다.`
+        return `${data.loginId}님, 환영합니다.`
       },
       error: (error) => {
         setIsLoading(false)
@@ -84,12 +87,12 @@ export function UserAuthForm({
       >
         <FormField
           control={form.control}
-          name='email'
+          name='loginId'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>이메일</FormLabel>
+              <FormLabel>아이디</FormLabel>
               <FormControl>
-                <Input placeholder='admin@example.com' {...field} />
+                <Input autoComplete='username' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -102,7 +105,7 @@ export function UserAuthForm({
             <FormItem className='relative'>
               <FormLabel>비밀번호</FormLabel>
               <FormControl>
-                <PasswordInput placeholder='********' {...field} />
+                <PasswordInput {...field} />
               </FormControl>
               <FormMessage />
               {/* 복원 시 주석 해제
