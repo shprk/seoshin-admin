@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# SPA 규칙보다 위에 둬야 /api 요청이 index.html로 안 갑니다.
+[[redirects]]
+  from = "/api/*"
+  to = "http://52.79.34.115:3001/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
